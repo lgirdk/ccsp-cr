@@ -37,11 +37,14 @@
         <component>
             <name>com.cisco.spvtg.ccsp.pam</name> <version>1</version>
         </component>
-
-    <!--
 		<component>
 	        <name>com.cisco.spvtg.ccsp.tr069pa</name> <version>1</version>
 	    </component>
+	    <component>
+	        <name>com.cisco.spvtg.ccsp.tdm</name> <version>1</version>
+	    </component>
+
+    <!--
         <component>
 	        <name>com.cisco.spvtg.ccsp.ssd</name> <version>1</version>
 	    </component>
@@ -49,10 +52,6 @@
 	        <name>com.cisco.spvtg.ccsp.fu</name> <version>1</version>
 	    </component>
 	-->
-	<!--
-	    <component>
-	        <name>com.cisco.spvtg.ccsp.tdm</name> <version>1</version>
-	    </component>
-	-->
+
     </components>    
 </deviceProfile>
