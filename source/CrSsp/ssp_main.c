@@ -531,6 +531,7 @@ int main(int argc, char* argv[])
     signal(SIGILL, sig_handler);
     signal(SIGQUIT, sig_handler);
     signal(SIGHUP, sig_handler);
+    signal(SIGPIPE, SIG_IGN);
 
     gather_info();
 
