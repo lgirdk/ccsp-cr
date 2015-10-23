@@ -22,30 +22,33 @@
     <version>1</version>
     <deviceName>VideoScape EP1.0</deviceName>
     <components>
-        <component>
-	        <name>com.cisco.spvtg.ccsp.CR</name> <version>1</version>
-	    </component>
-        <component>
-	        <name>com.cisco.spvtg.ccsp.psm</name> <version>1</version>
-	    </component>
-	    <component>
-	        <name>com.cisco.spvtg.ccsp.mta</name> <version>1</version>
-	    </component> 
-	    <component>
-	        <name>com.cisco.spvtg.ccsp.cm</name> <version>1</version>
-	    </component>	 
-        <component>
-            <name>com.cisco.spvtg.ccsp.pam</name> <version>1</version>
-        </component>
-		<component>
-	        <name>com.cisco.spvtg.ccsp.tr069pa</name> <version>1</version>
-	    </component>
-	    <component>
-	        <name>com.cisco.spvtg.ccsp.tdm</name> <version>1</version>
-	    </component>
-       <component>
-           <name>com.cisco.spvtg.ccsp.wecb</name> <version>1</version>
-       </component>
+	<component>
+		<name>com.cisco.spvtg.ccsp.CR</name> <version>1</version>
+	</component>
+	<component>
+		<name>com.cisco.spvtg.ccsp.psm</name> <version>1</version>
+	</component>
+	<component>
+		<name>com.cisco.spvtg.ccsp.mta</name> <version>1</version>
+	</component> 
+	<component>
+		<name>com.cisco.spvtg.ccsp.cm</name> <version>1</version>
+	</component>	 
+	<component>
+		<name>com.cisco.spvtg.ccsp.pam</name> <version>1</version>
+	</component>
+	<component>
+		<name>com.cisco.spvtg.ccsp.tr069pa</name> <version>1</version>
+	</component>
+	<component>
+		<name>com.cisco.spvtg.ccsp.tdm</name> <version>1</version>
+	</component>
+	<component>
+		<name>com.cisco.spvtg.ccsp.wecb</name> <version>1</version>
+	</component>
+	<component>
+		<name>com.cisco.spvtg.ccsp.wifi</name> <version>1</version>
+	</component>
 
     <!--
         <component>
