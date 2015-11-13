@@ -47,6 +47,8 @@
 
 #include "ssp_global.h"
 
+#define DEBUG_INI_NAME  "/etc/debug.ini"
+
 PCCSP_CR_MANAGER_OBJECT                     g_pCcspCrMgr            = NULL;
 void*                                       g_pDbusHandle           = NULL;
 ULONG                                       g_ulAllocatedSizeInit   = 0;
@@ -470,7 +472,7 @@ int main(int argc, char* argv[])
 
     pComponentName = CCSP_DBUS_INTERFACE_CR;
 	#ifdef FEATURE_SUPPORT_RDKLOG
-	rdk_logger_init("/fss/gw/lib/debug.ini");
+	rdk_logger_init(DEBUG_INI_NAME);
 	#endif
 
 #if defined(_DEBUG) || defined(_COSA_SIM_)
