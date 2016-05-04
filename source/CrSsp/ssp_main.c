@@ -47,6 +47,9 @@
 
 #include "ssp_global.h"
 
+#ifdef INCLUDE_BREAKPAD
+#include "breakpad_wrapper.h"
+#endif
 #define DEBUG_INI_NAME  "/etc/debug.ini"
 
 PCCSP_CR_MANAGER_OBJECT                     g_pCcspCrMgr            = NULL;
@@ -543,6 +546,9 @@ int main(int argc, char* argv[])
     if ( bRunAsDaemon )
         daemonize();
 
+#ifdef INCLUDE_BREAKPAD
+    breakpad_ExceptionHandler();
+#else
     signal(SIGTERM, sig_handler);
     signal(SIGINT, sig_handler);
     signal(SIGUSR1, sig_handler);
@@ -557,6 +563,7 @@ int main(int argc, char* argv[])
     signal(SIGHUP, sig_handler);
     signal(SIGPIPE, SIG_IGN);
 
+#endif
     gather_info();
 
     cmd_dispatch('e');
