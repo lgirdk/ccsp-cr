@@ -418,60 +418,12 @@ void sig_handler(int sig)
     }
 }
 
-
-#if defined(_ANSC_LINUX)
-static void daemonize(void) {
-	int fd;
-	switch (fork()) {
-	case 0:
-		break;
-	case -1:
-		// Error
-		AnscTrace("Error daemonizing (fork)! %d - %s\n", errno, strerror(
-				errno));
-		exit(0);
-		break;
-	default:
-		_exit(0);
-	}
-
-	if (setsid() < 	0) {
-		AnscTrace("Error demonizing (setsid)! %d - %s\n", errno, strerror(errno));
-		exit(0);
-	}
-
-    /*
-     *  What is the point to change current directory?
-     *
-    chdir("/");
-     */
-
-#ifndef  _DEBUG
-
-	fd = open("/dev/null", O_RDONLY);
-	if (fd != 0) {
-		dup2(fd, 0);
-		close(fd);
-	}
-	fd = open("/dev/null", O_WRONLY);
-	if (fd != 1) {
-		dup2(fd, 1);
-		close(fd);
-	}
-	fd = open("/dev/null", O_WRONLY);
-	if (fd != 2) {
-		dup2(fd, 2);
-		close(fd);
-	}
-#endif
-}
-#endif
-
 int main(int argc, char* argv[])
 {
 	int                             cmdChar = 0;
     int                             idx     = 0;
     BOOL                            bRunAsDaemon       = TRUE;
+	int 							FileDescriptor,rc;
 
     pComponentName = CCSP_DBUS_INTERFACE_CR;
 	#ifdef FEATURE_SUPPORT_RDKLOG
@@ -543,8 +495,49 @@ int main(int argc, char* argv[])
 
 
 #elif defined(_ANSC_LINUX)
+/*demonizing*/
     if ( bRunAsDaemon )
-        daemonize();
+    {
+
+		 rc = fork();
+		 if(rc == 0 ){
+		 	AnscTrace("Demonizing Done!!\n");
+		 	}
+		 else if(rc == -1){
+
+			AnscTrace("Demonizing Error (fork)! %d - %s\n", errno, strerror(errno));
+			exit(0);
+		 	}
+		 else
+		 	{
+		 		_exit(0);
+		 	}
+	
+		if (setsid() <	0) {
+			AnscTrace("Demonizing Error (setsid)! %d - %s\n", errno, strerror(errno));
+			exit(0);
+		}
+	
+#ifndef  _DEBUG
+	
+		FileDescriptor = open("/dev/null", O_RDONLY);
+		if (FileDescriptor != 0) {
+			dup2(FileDescriptor, 0);
+			close(FileDescriptor);
+		}
+		FileDescriptor = open("/dev/null", O_WRONLY);
+		if (FileDescriptor != 1) {
+			dup2(FileDescriptor, 1);
+			close(FileDescriptor);
+		}
+		FileDescriptor = open("/dev/null", O_WRONLY);
+		if (FileDescriptor != 2) {
+			dup2(FileDescriptor, 2);
+			close(FileDescriptor);
+		}
+
+#endif
+	}
 
 #ifdef INCLUDE_BREAKPAD
     breakpad_ExceptionHandler();
