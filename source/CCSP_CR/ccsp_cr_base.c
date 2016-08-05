@@ -315,12 +315,14 @@ CcspCrCloneString
   )
 {
     char*                       pNewString  = NULL;
-    ULONG                       ulSize      = AnscSizeOfString(pString) + 1;
+    ULONG                       ulSize      = NULL;
 
     if( pString == NULL)
     {
         return NULL;
     }
+
+    ulSize = AnscSizeOfString(pString) + 1;  /*RDKB-6903, CID-33341,null check and use*/
 
     if( ulSize == 16 || ulSize == 13)
     {
