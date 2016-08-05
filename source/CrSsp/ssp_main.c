@@ -560,6 +560,8 @@ int main(int argc, char* argv[])
     gather_info();
 
     cmd_dispatch('e');
+	
+	system("touch /tmp/cr_initialized");
 
 
     if ( bRunAsDaemon )
