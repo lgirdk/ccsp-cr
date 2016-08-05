@@ -163,6 +163,7 @@ CcspCrLoadDeviceProfile
 
     if( pXMLContent == NULL)
     {
+        AnscCloseFile(pFileHandle); /*RDKB-6901, CID-33521, free unused resources before exit */
         return FALSE;
     }
 
@@ -171,7 +172,7 @@ CcspCrLoadDeviceProfile
     if( AnscReadFile( pFileHandle, pXMLContent, &uBufferSize) != ANSC_STATUS_SUCCESS)
     {
         AnscFreeMemory(pXMLContent);
-
+        AnscCloseFile(pFileHandle); /*RDKB-6901, CID-33521, free unused resources before exit */
         return FALSE;
     }
 
