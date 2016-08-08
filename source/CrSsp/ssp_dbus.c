@@ -530,7 +530,7 @@ CcspCrProcessDbusRequest
     const char *interface = dbus_message_get_interface(message);
     const char *method   = dbus_message_get_member(message);
     DBusMessage *reply;
- 	   
+
     /* Too many trace. Disable this  -- Yan */
     /* AnscTrace("Receive Dbus Request: %s\n", method); */
     
@@ -547,9 +547,9 @@ CcspCrProcessDbusRequest
         DBusMessageIter iter;
         DBusMessageIter array_iter;
         DBusMessageIter struct_iter;
-        dbus_int32_t tmp ;
+        dbus_int32_t tmp = 0;
         int component_version;
-        dbus_int32_t result ;
+        dbus_int32_t result = 0;
         char * component_name = 0;
         char * dbus_path = 0;
         name_spaceType_t **val = 0;
@@ -594,6 +594,9 @@ CcspCrProcessDbusRequest
         }
         while (dbus_message_iter_next (&array_iter));
 
+        /*RDKB-6902, CID-33510, re-arranging the macro to avoid reosurce leaks as macro may return*/
+        DBUS_MESSAGE_ITER_RECURSE_SRV(&iter, &array_iter , DBUS_TYPE_ARRAY, 0, bus_info->freefunc);
+
         if(param_size)
         {
             val = AnscAllocateMemory(param_size*sizeof(name_spaceType_t* ));
@@ -606,7 +609,6 @@ CcspCrProcessDbusRequest
             memset(val, 0, param_size*sizeof(name_spaceType_t* ));
         }
 
-        DBUS_MESSAGE_ITER_RECURSE_SRV(&iter, &array_iter , DBUS_TYPE_ARRAY, 0, bus_info->freefunc);
         for(i = 0; i < param_size; i++)
         {
             DBUS_MESSAGE_ITER_RECURSE_SRV(&array_iter, &struct_iter , DBUS_TYPE_STRUCT, val, bus_info->freefunc);
@@ -665,8 +667,8 @@ CcspCrProcessDbusRequest
     else if (!strcmp(CCSP_DBUS_INTERFACE_CR, interface) && !strcmp("unregisterNamespace", method))
     {
         DBusMessageIter iter;
-        dbus_int32_t tmp ;
-        dbus_int32_t result ;
+        dbus_int32_t tmp = 0;
+        dbus_int32_t result = 0;
         char * component_name = 0;
         char * name_space = 0;
 
@@ -699,8 +701,8 @@ CcspCrProcessDbusRequest
     else if (!strcmp(CCSP_DBUS_INTERFACE_CR, interface) && !strcmp("unregisterComponent", method))
     {
         DBusMessageIter iter;
-        dbus_int32_t tmp ;
-        dbus_int32_t result ;
+        dbus_int32_t tmp = 0;
+        dbus_int32_t result = 0;
         char * component_name = 0;
         name_spaceType_t *val = 0;
 
@@ -728,8 +730,8 @@ CcspCrProcessDbusRequest
         DBusMessageIter iter;
         DBusMessageIter array_iter;
         DBusMessageIter struct_iter;
-        dbus_int32_t tmp ;
-        dbus_int32_t result ;
+        dbus_int32_t tmp = 0;
+        dbus_int32_t result = 0;
         componentStruct_t **components =0;
         int size  = 0;
         char *name_space = 0;
@@ -802,8 +804,8 @@ CcspCrProcessDbusRequest
     {
         DBusMessageIter iter;
         DBusMessageIter struct_iter;
-        dbus_int32_t tmp ;
-        dbus_int32_t result ;
+        dbus_int32_t tmp = 0;
+        dbus_int32_t result = 0;
         char * name_space = 0;
         componentStruct_t *component =0;
         char *subsystem_prefix = 0;
@@ -862,8 +864,8 @@ CcspCrProcessDbusRequest
         DBusMessageIter iter;
         DBusMessageIter array_iter;
         DBusMessageIter struct_iter;
-        dbus_int32_t tmp ;
-        dbus_int32_t result ;
+        dbus_int32_t tmp = 0;
+        dbus_int32_t result = 0;
         char * component_name = 0;
         name_spaceType_t **name_space =0;
         int size  = 0;
@@ -926,8 +928,8 @@ CcspCrProcessDbusRequest
         DBusMessageIter iter;
         DBusMessageIter array_iter;
         DBusMessageIter struct_iter;
-        dbus_int32_t tmp ;
-        dbus_int32_t result ;
+        dbus_int32_t tmp = 0;
+        dbus_int32_t result = 0;
         registeredComponent_t **components =0;
         int size  = 0;
 
@@ -980,11 +982,11 @@ CcspCrProcessDbusRequest
     {
         DBusMessageIter iter;
         DBusMessageIter struct_iter;
-        dbus_int32_t tmp ;
-        dbus_bool_t btmp ;
-        dbus_int32_t result ;
+        dbus_int32_t tmp = 0;
+        dbus_bool_t btmp = 0;
+        dbus_int32_t result = 0;
         char * name_space = 0;
-        enum dataType_e data_type;
+        enum dataType_e data_type = 0; /*RDKB-6902, CID-33263, initialize before use*/
         dbus_bool typeMatch;
         char *subsystem_prefix = 0;
 
@@ -1032,8 +1034,8 @@ CcspCrProcessDbusRequest
     else if (!strcmp(CCSP_DBUS_INTERFACE_CR, interface) && !strcmp("dumpComponentRegistry", method))
     {
         DBusMessageIter iter;
-        dbus_int32_t tmp ;
-        dbus_int32_t result ;
+        dbus_int32_t tmp = 0;
+        dbus_int32_t result = 0;
 
         result = dumpComponentRegistry(
                  );
@@ -1051,9 +1053,9 @@ CcspCrProcessDbusRequest
     else if (!strcmp(CCSP_DBUS_INTERFACE_CR, interface) && !strcmp("isSystemReady", method))
     {
         DBusMessageIter iter;
-        dbus_int32_t tmp ;
+        dbus_int32_t tmp = 0;
         dbus_bool_t btmp ;
-        dbus_int32_t result ;
+        dbus_int32_t result = 0;
         dbus_bool Ready;
 
         result = isSystemReady(
@@ -1075,9 +1077,9 @@ CcspCrProcessDbusRequest
     else if (!strcmp(CCSP_DBUS_INTERFACE_CR, interface) && !strcmp("requestSessionID", method))
     {
         DBusMessageIter iter;
-        dbus_int32_t tmp ;
-        dbus_int32_t result ;
-        int sessionID;
+        dbus_int32_t tmp = 0;  /*RDKB-6902, CID-33061, initilize before use*/
+        dbus_int32_t result = 0;
+        int sessionID = 0;
 
         dbus_message_iter_init (message, &iter);
         if(dbus_message_iter_get_arg_type (&iter) == DBUS_TYPE_INT32)
@@ -1106,9 +1108,9 @@ CcspCrProcessDbusRequest
     else if (!strcmp(CCSP_DBUS_INTERFACE_CR, interface) && !strcmp("getCurrentSessionID", method))
     {
         DBusMessageIter iter;
-        dbus_int32_t tmp ;
-        dbus_int32_t result ;
-        int sessionID;
+        dbus_int32_t tmp = 0;
+        dbus_int32_t result = 0;
+        int sessionID = 0;
         int priority;
 
         dbus_message_iter_init (message, &iter);
@@ -1139,9 +1141,9 @@ CcspCrProcessDbusRequest
     else if (!strcmp(CCSP_DBUS_INTERFACE_CR, interface) && !strcmp("informEndOfSession", method))
     {
         DBusMessageIter iter;
-        dbus_int32_t tmp ;
-        dbus_int32_t result ;
-        int sessionID;
+        dbus_int32_t tmp = 0;
+        dbus_int32_t result = 0;
+        int sessionID = 0;
 
         dbus_message_iter_init (message, &iter);
         if(dbus_message_iter_get_arg_type (&iter) == DBUS_TYPE_INT32)
