@@ -47,6 +47,10 @@
 
 #include "ssp_global.h"
 
+#ifdef ENABLE_SD_NOTIFY
+#include <systemd/sd-daemon.h>
+#endif
+
 #ifdef INCLUDE_BREAKPAD
 #include "breakpad_wrapper.h"
 #endif
@@ -424,6 +428,8 @@ int main(int argc, char* argv[])
     int                             idx     = 0;
     BOOL                            bRunAsDaemon       = TRUE;
 	int 							FileDescriptor,rc;
+	char                            cmd[1024]          = {0};
+    FILE                           *fd                 = NULL;
 
     pComponentName = CCSP_DBUS_INTERFACE_CR;
 	#ifdef FEATURE_SUPPORT_RDKLOG
@@ -538,6 +544,19 @@ int main(int argc, char* argv[])
 
 #endif
 	}
+	
+	fd = fopen("/var/tmp/CcspCrSsp.pid", "w+");
+    if ( !fd )
+    {
+        AnscTrace("Create /var/tmp/CcspCrSsp.pid error. \n");
+        return 1;
+    }
+    else
+    {
+        sprintf(cmd, "%d", getpid());
+        fputs(cmd, fd);
+        fclose(fd);
+    }
 
 #ifdef INCLUDE_BREAKPAD
     breakpad_ExceptionHandler();
@@ -560,6 +579,14 @@ int main(int argc, char* argv[])
     gather_info();
 
     cmd_dispatch('e');
+	
+#ifdef ENABLE_SD_NOTIFY
+    sd_notifyf(0, "READY=1\n"
+              "STATUS=CcspCrSsp is Successfully Initialized\n"
+              "MAINPID=%lu", (unsigned long) getpid());
+  
+    AnscTrace("RDKB_SYSTEM_BOOT_UP_LOG : CcspCrSsp sd_notify Called\n");
+#endif
 	
 	system("touch /tmp/cr_initialized");
 
