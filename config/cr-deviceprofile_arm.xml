@@ -52,6 +52,9 @@
 		<name>com.cisco.spvtg.ccsp.wifi</name> <version>1</version>
 	</component>
 
+	<component>
+		<name>com.cisco.spvtg.ccsp.lmlite</name> <version>1</version>
+	</component>
     <!--
         <component>
 	        <name>com.cisco.spvtg.ccsp.ssd</name> <version>1</version>
