@@ -44,9 +44,9 @@
 		<name>com.cisco.spvtg.ccsp.tdm</name> <version>1</version>
 	</component>
 
-	<component>
+	<!--<component>
 		<name>com.cisco.spvtg.ccsp.wecb</name> <version>1</version>
-	</component>
+	</component> -->
 
 	<component>
 		<name>com.cisco.spvtg.ccsp.wifi</name> <version>1</version>
