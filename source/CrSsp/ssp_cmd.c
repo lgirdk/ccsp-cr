@@ -129,6 +129,27 @@ void CRSessionTest()
     AnscTrace("Current CR Session id= %d and Priority = %d\n", uSession, uPriority);
 }
 
+void CRFreeComponent(name_spaceType_t***   component, ULONG  count)
+{
+    name_spaceType_t**           ppSpaceType       = *component;
+    ULONG                        i                 = 0;            
+
+    if (ppSpaceType)
+    {
+       for( i = 0; i < count; i ++)
+       {
+          if (ppSpaceType[i])
+          {
+             if (ppSpaceType[i]->name_space)
+                CcspCrFreeMemory((char*)ppSpaceType[i]->name_space);
+
+             CcspCrFreeMemory(ppSpaceType[i]);
+          }
+       }
+       CcspCrFreeMemory(ppSpaceType);
+    }
+}
+
 void CRRegisterTest()
 {
      name_spaceType_t**           ppSpaceType       = NULL;
@@ -139,9 +160,20 @@ void CRRegisterTest()
 
      ppSpaceType       = (name_spaceType_t**)CcspCrAllocateMemory( uCount * sizeof(name_spaceType_t*));
 
+     if (!ppSpaceType)
+     {
+        AnscTrace("Memory allocation failed");
+        return;
+     }
      for( i = 0; i < uCount; i ++)
      {
         ppSpaceType[i] = (name_spaceType_t*)CcspCrAllocateMemory(sizeof(name_spaceType_t));
+        if (!ppSpaceType[i])
+        {
+           AnscTrace("Memory allocation failed");
+           CRFreeComponent(&ppSpaceType, i);
+           return;
+        }
 
         if( i < uCount - 1)
         {
@@ -182,20 +214,25 @@ void CRRegisterTest()
      PrintoutStatus(iStatus, TRUE);
 
      /* free the memory */
-     for( i = 0; i < uCount; i ++)
-     {
-        CcspCrFreeMemory((char*)ppSpaceType[i]->name_space);
-        CcspCrFreeMemory(ppSpaceType[i]);
-     }
-
-     CcspCrFreeMemory(ppSpaceType);
+     CRFreeComponent(&ppSpaceType, uCount);
 
      /* register another component "CCSP_ObjectSample" */
      ppSpaceType       = (name_spaceType_t**)CcspCrAllocateMemory( uCount * sizeof(name_spaceType_t*));
 
+     if (!ppSpaceType)
+     {
+        AnscTrace("Memory allocation failed");
+        return;
+     }
      for( i = 0; i < uCount; i ++)
      {
         ppSpaceType[i] = (name_spaceType_t*)CcspCrAllocateMemory(sizeof(name_spaceType_t));
+        if (!ppSpaceType[i])
+        {
+           AnscTrace("Memory allocation failed");
+           CRFreeComponent(&ppSpaceType, i);
+           return;
+        }
 
         if( i < uCount/2)
         {
@@ -216,19 +253,25 @@ void CRRegisterTest()
      PrintoutStatus(iStatus, TRUE);
 
      /* free the memory */
-     for( i = 0; i < uCount; i ++)
-     {
-        CcspCrFreeMemory((char*)ppSpaceType[i]->name_space);
-        CcspCrFreeMemory(ppSpaceType[i]);
-     }
-     CcspCrFreeMemory(ppSpaceType);
+     CRFreeComponent(&ppSpaceType, uCount);
 
      /* register another component "CCSP_TableSample" */
      ppSpaceType       = (name_spaceType_t**)CcspCrAllocateMemory( uCount * sizeof(name_spaceType_t*));
 
+     if (!ppSpaceType)
+     {
+        AnscTrace("Memory allocation failed");
+        return;
+     }    
      for( i = 0; i < uCount; i ++)
      {
         ppSpaceType[i] = (name_spaceType_t*)CcspCrAllocateMemory(sizeof(name_spaceType_t));
+        if (!ppSpaceType[i])
+        {
+           AnscTrace("Memory allocation failed");
+           CRFreeComponent(&ppSpaceType, i);
+           return;
+        }
 
         if( i == 0)
         {
@@ -242,7 +285,6 @@ void CRRegisterTest()
             ppSpaceType[i]->name_space = CcspCrCloneString(buffer);
             ppSpaceType[i]->dataType   = rand() % 9;
         }
-
      }
 
      AnscTrace("Register component 'CCSP_TableSample'...\n");
@@ -251,13 +293,7 @@ void CRRegisterTest()
      PrintoutStatus(iStatus, TRUE);
 
      /* free the memory */
-     for( i = 0; i < uCount; i ++)
-     {
-        CcspCrFreeMemory((char*)ppSpaceType[i]->name_space);
-        CcspCrFreeMemory(ppSpaceType[i]);
-     }
-     CcspCrFreeMemory(ppSpaceType);
-
+     CRFreeComponent(&ppSpaceType, uCount); 
 }
 
 void CRCheckDataTypeTest()
@@ -708,9 +744,21 @@ void CRUnregisterTest()
      AnscTrace("Register back the component...\n");
      ppSpaceType       = (name_spaceType_t**)CcspCrAllocateMemory( uCount * sizeof(name_spaceType_t*));
 
+     if (!ppSpaceType)
+     {
+        AnscTrace("Memory allocation failed");
+        return;
+     }
      for( i = 0; i < uCount; i ++)
      {
         ppSpaceType[i] = (name_spaceType_t*)CcspCrAllocateMemory(sizeof(name_spaceType_t));
+        if (!ppSpaceType[i])
+        {
+           AnscTrace("Memory allocation failed");
+           CRFreeComponent(&ppSpaceType, i);
+           return;
+        }
+
         _ansc_sprintf(buffer, "Device.DevInfo.param%d", i + 1);
 
         ppSpaceType[i]->name_space = CcspCrCloneString(buffer);
@@ -720,16 +768,10 @@ void CRUnregisterTest()
      AnscTrace("Register a component with correct version...\n");
      iStatus = g_pCcspCrMgr->RegisterCapabilities(g_pCcspCrMgr, "CCSP_DevInfo", 1, "/com/cisco/spvtg/ccsp/DevInfo", "",ppSpaceType, uCount - 1);
      AnscTrace("The result = %d ", iStatus);
-    PrintoutStatus(iStatus, TRUE);
+     PrintoutStatus(iStatus, TRUE);
 
      /* free the memory */
-     for( i = 0; i < uCount; i ++)
-     {
-        CcspCrFreeMemory((char*)ppSpaceType[i]->name_space);
-        CcspCrFreeMemory(ppSpaceType[i]);
-     }
-     CcspCrFreeMemory(ppSpaceType);
-
+     CRFreeComponent(&ppSpaceType, uCount);
 }
 
 void CRComponentTest()
