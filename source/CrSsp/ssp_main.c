@@ -434,9 +434,9 @@ int main(int argc, char* argv[])
 #endif
 
     pComponentName = CCSP_DBUS_INTERFACE_CR;
-	#ifdef FEATURE_SUPPORT_RDKLOG
-	rdk_logger_init(DEBUG_INI_NAME);
-	#endif
+#ifdef FEATURE_SUPPORT_RDKLOG
+    RDK_LOGGER_INIT();
+#endif
 
 #if defined(_DEBUG) || defined(_COSA_SIM_)
     AnscSetTraceLevel(CCSP_TRACE_LEVEL_INFO);
