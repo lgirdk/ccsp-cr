@@ -60,6 +60,7 @@ PCCSP_CR_MANAGER_OBJECT                     g_pCcspCrMgr            = NULL;
 void*                                       g_pDbusHandle           = NULL;
 ULONG                                       g_ulAllocatedSizeInit   = 0;
 char                                        g_Subsystem[32]         = {0};
+static BOOL                                 g_running               = TRUE;
 
 #ifndef WIN32
 extern ULONG                                g_ulAllocatedSizeCurr;
@@ -383,9 +384,13 @@ static void _print_stack_backtrace(void)
 void sig_handler(int sig)
 {
     if ( sig == SIGINT ) {
+#ifdef INCLUDE_GPERFTOOLS
+        g_running = FALSE;
+#else
         signal(SIGINT, sig_handler); /* reset it to this function */
         CcspTraceInfo(("SIGINT received!\n"));
         exit(0);
+#endif
     }
     else if ( sig == SIGUSR1 ) {
         signal(SIGUSR1, sig_handler); /* reset it to this function */
@@ -406,8 +411,12 @@ void sig_handler(int sig)
     }
     else if ( sig == SIGTERM )
     {
+#ifdef INCLUDE_GPERFTOOLS
+        g_running = FALSE;
+#else
         CcspTraceInfo(("SIGTERM received!\n"));
         exit(0);
+#endif
     }
     else if ( sig == SIGKILL )
     {
@@ -560,7 +569,12 @@ int main(int argc, char* argv[])
 
 #ifdef INCLUDE_BREAKPAD
     breakpad_ExceptionHandler();
-#else
+#endif
+    
+#if defined(INCLUDE_GPERFTOOLS)
+    signal(SIGINT, sig_handler);
+    signal(SIGTERM, sig_handler);
+#elif !defined(INCLUDE_BREAKPAD)
     signal(SIGTERM, sig_handler);
     signal(SIGINT, sig_handler);
     signal(SIGUSR1, sig_handler);
@@ -593,12 +607,12 @@ int main(int argc, char* argv[])
 
     if ( bRunAsDaemon )
     {
-		while (1)
+		while (g_running)
 			sleep(30);
     }
     else 
     {
-		while ( cmdChar != 'q' )
+		while ( cmdChar != 'q' && g_running)
 		{
 			cmdChar = getchar();
 			cmd_dispatch(cmdChar);
