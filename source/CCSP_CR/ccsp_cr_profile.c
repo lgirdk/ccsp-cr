@@ -98,6 +98,9 @@
 
 /* define default CR device profile name */
 #define CCSP_CR_DEVICE_PROFILE_XML_FILE             "cr-deviceprofile.xml"
+#define CCSP_CR_ETHWAN_DEVICE_PROFILE_XML_FILE             "cr-ethwan-deviceprofile.xml"
+
+#define CCSP_ETHWAN_ENABLE "/nvram/ETHWAN_ENABLE"
 
 /**********************************************************************
 
@@ -142,6 +145,18 @@ CcspCrLoadDeviceProfile
     PCCSP_COMPONENT_INFO            pCompInfo          = (PCCSP_COMPONENT_INFO)NULL;
 
     /* load from the file */
+    if (access(CCSP_ETHWAN_ENABLE, F_OK) == 0)
+    {
+            pFileHandle =
+        AnscOpenFile
+        (
+            CCSP_CR_ETHWAN_DEVICE_PROFILE_XML_FILE,
+            ANSC_FILE_O_BINARY | ANSC_FILE_O_RDONLY,
+            ANSC_FILE_S_IREAD
+        );
+    }
+    else
+    {
     pFileHandle =
         AnscOpenFile
         (
@@ -149,7 +164,7 @@ CcspCrLoadDeviceProfile
             ANSC_FILE_O_BINARY | ANSC_FILE_O_RDONLY,
             ANSC_FILE_S_IREAD
         );
-
+    }
     if( pFileHandle == NULL)
     {
         AnscTrace("Failed to load the file : '%s'\n", CCSP_CR_DEVICE_PROFILE_XML_FILE);
