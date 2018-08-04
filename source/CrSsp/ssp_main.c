@@ -43,13 +43,11 @@
 #ifdef _ANSC_LINUX
 #include <sys/types.h>
 #include <sys/ipc.h>
+#include <semaphore.h>
+#include <fcntl.h>
 #endif
 
 #include "ssp_global.h"
-
-#ifdef ENABLE_SD_NOTIFY
-#include <systemd/sd-daemon.h>
-#endif
 
 #ifdef INCLUDE_BREAKPAD
 #include "breakpad_wrapper.h"
@@ -439,6 +437,9 @@ int main(int argc, char* argv[])
 	int 							FileDescriptor,rc;
 	char                            cmd[1024]          = {0};
     FILE                           *fd                 = NULL;
+#ifdef _ANSC_LINUX
+    sem_t *sem;
+#endif
 
     pComponentName = CCSP_DBUS_INTERFACE_CR;
 #ifdef FEATURE_SUPPORT_RDKLOG
@@ -513,6 +514,18 @@ int main(int argc, char* argv[])
 /*demonizing*/
     if ( bRunAsDaemon )
     {
+		 /* initialize semaphores for shared processes */
+		sem = sem_open ("pSemCr", O_CREAT | O_EXCL, 0644, 0);
+		if(SEM_FAILED == sem)
+		{
+			AnscTrace("Failed to create semaphore %d - %s\n", errno, strerror(errno));
+			_exit(1);
+		}
+		/* name of semaphore is "pSemCr", semaphore is reached using this name */
+		sem_unlink ("pSemCr");
+		/* unlink prevents the semaphore existing forever */
+		/* if a crash occurs during the execution         */
+		AnscTrace("Semaphore initialization Done!!\n");
 
 		 rc = fork();
 		 if(rc == 0 ){
@@ -525,6 +538,8 @@ int main(int argc, char* argv[])
 		 	}
 		 else
 		 	{
+				sem_wait (sem);
+				sem_close(sem);
 		 		_exit(0);
 		 	}
 	
@@ -594,19 +609,13 @@ int main(int argc, char* argv[])
 
     cmd_dispatch('e');
 	
-#ifdef ENABLE_SD_NOTIFY
-    sd_notifyf(0, "READY=1\n"
-              "STATUS=CcspCrSsp is Successfully Initialized\n"
-              "MAINPID=%lu", (unsigned long) getpid());
-  
-    AnscTrace("RDKB_SYSTEM_BOOT_UP_LOG : CcspCrSsp sd_notify Called\n");
-#endif
-	
-	system("touch /tmp/cr_initialized");
+    system("touch /tmp/cr_initialized");
 
 
     if ( bRunAsDaemon )
     {
+		sem_post (sem);
+		sem_close(sem);
 		while (g_running)
 			sleep(30);
     }
