@@ -42,13 +42,6 @@
 
     ---------------------------------------------------------------
 
-    copyright:
-
-        Cisco Systems, Inc.
-        All Rights Reserved.
-
-    ---------------------------------------------------------------
-
     description:
 
         This module implements transaction session related functions for 

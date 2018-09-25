@@ -41,13 +41,6 @@
 
     ---------------------------------------------------------------
 
-    copyright:
-
-        Cisco Systems, Inc.
-        All Rights Reserved.
-
-    ---------------------------------------------------------------
-
     description:
 
         This header file defines header files needed for CCSP CR SSP.

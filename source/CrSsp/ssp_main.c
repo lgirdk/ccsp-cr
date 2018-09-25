@@ -324,8 +324,8 @@ int  gather_info()
     AnscTrace("        ***   Common Component Software Platform (CCSP)             ***\n");
     AnscTrace("        ***   Component Registrar (CR) Application                  ***\n");
     AnscTrace("        ***                                                         ***\n");
-    AnscTrace("        ***   Cisco Systems, Inc., All Rights Reserved.             ***\n");
-    AnscTrace("        ***                                                         ***\n");
+    AnscTrace("        ***   Copyright Cisco Systems, Inc. under Apache 2.0	   ***\n");
+    AnscTrace("        ***      as per component's LICENSE file.         	   ***\n");
     AnscTrace("        ***************************************************************\n");
     AnscTrace("\n\n");
 
