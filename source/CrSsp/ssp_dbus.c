@@ -899,6 +899,11 @@ CcspCrProcessDbusRequest
                                                   "si",
                                                   &struct_iter);
 
+                if (name_space[i] == NULL) {
+                    AnscTrace("%s: name_space[%d] NULL\n", __func__, i);
+                    return DBUS_HANDLER_RESULT_HANDLED;
+                }
+
                 DBUS_MESSAGE_APPEND_STRING (&struct_iter, name_space[i]->name_space);
 		        tmp = name_space[i]->dataType;
 		        dbus_message_iter_append_basic (&struct_iter, DBUS_TYPE_INT32, &tmp);
