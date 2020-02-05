@@ -56,6 +56,8 @@
 #include "ccsp_message_bus.h"
 #include "ccsp_trace.h"
 
+#include <telemetry_busmessage_sender.h>
+
 extern PCCSP_CR_MANAGER_OBJECT                     g_pCcspCrMgr;
 extern void*                                       g_pDbusHandle;
 extern ULONG                                       g_ulAllocatedSizeInit;
@@ -1242,7 +1244,20 @@ waitingForSystemReadyTask(ANSC_HANDLE  hThisObject)
             {
                 if( pCompInfo->uStatus == CCSP_Component_NotRegistered)
                 {
-                    AnscTrace("System Not Ready!!!! '%s' v%d NotRegistered\n", pCompInfo->pComponentName, pCompInfo->uVersion);
+		    AnscTrace("System Not Ready!!!! '%s' v%d NotRegistered\n",
+			     pCompInfo->pComponentName, pCompInfo->uVersion);
+		    if (strstr(pCompInfo->pComponentName, "ccsp.cm"))
+		    {
+			t2_event_d("SYS_ERROR_CM_Not_Registered", 1);
+		    }
+		    else if (strstr(pCompInfo->pComponentName, "ccsp.psm"))
+		    {
+			t2_event_d("SYS_ERROR_PSM_Not_Registered", 1);
+		    }
+		    else if (strstr(pCompInfo->pComponentName, "ccsp.wifi"))
+		    {
+			t2_event_d("SYS_ERROR_WIFI_Not_Registered", 1);
+		    }
                     break;
                 }
                 else if( pCompInfo->uStatus != CCSP_Component_RegSuccessful)
