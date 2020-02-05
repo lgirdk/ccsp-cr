@@ -87,6 +87,8 @@
 
 #include "ccsp_base_api.h"
 
+#include <telemetry_busmessage_sender.h>
+
 /**********************************************************************
 
     prototype:
@@ -398,7 +400,12 @@ CcspCrDumpObject
 
             if( pCompInfo->uStatus == CCSP_Component_NotRegistered)
             {
-                AnscTrace("#%.2d %s v%d NotRegistered\n", i, pCompInfo->pComponentName, pCompInfo->uVersion);
+		AnscTrace("#%.2d %s v%d NotRegistered\n", i,
+			  pCompInfo->pComponentName, pCompInfo->uVersion);
+		if (strstr(pCompInfo->pComponentName, "ccsp.tr069pa"))
+		{
+		    t2_event_d("SYS_ERROR_TR69_Not_Registered", 1);
+		}
             }
             else if( pCompInfo->uStatus == CCSP_Component_RegSuccessful)
             {
