@@ -28,4 +28,4 @@ bin_PROGRAMS = CcspCrSsp
 CcspCrSsp_CPPFLAGS = -I$(top_srcdir)/source/DslhManagementServer $(CPPFLAGS)
 CcspCrSsp_CFLAGS = $(SYSTEMD_CFLAGS)
 CcspCrSsp_SOURCES = CrSsp/ssp_main.c CrSsp/ssp_dbus.c CrSsp/ssp_cmd.c CCSP_CR/ccsp_cr_utility.c CCSP_CR/ccsp_cr_base.c CCSP_CR/ccsp_cr_exportDM.c CCSP_CR/ccsp_cr_operation.c CCSP_CR/ccsp_cr_session.c CCSP_CR/ccsp_cr_profile.c
-CcspCrSsp_LDFLAGS =  -lccsp_common $(SYSTEMD_LDFLAGS)
+CcspCrSsp_LDFLAGS =  -lccsp_common $(SYSTEMD_LDFLAGS) -lpthread
