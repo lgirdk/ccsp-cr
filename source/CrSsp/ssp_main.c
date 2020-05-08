@@ -477,6 +477,10 @@ int main(int argc, char* argv[])
     sem_t *sem = NULL;
 #endif
 
+    // Buffer characters till newline for stdout and stderr
+    setlinebuf(stdout);
+    setlinebuf(stderr);
+
     pComponentName = CCSP_DBUS_INTERFACE_CR;
 #ifdef FEATURE_SUPPORT_RDKLOG
     RDK_LOGGER_INIT();
