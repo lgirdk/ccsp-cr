@@ -48,7 +48,11 @@
 #endif
 
 #include "ssp_global.h"
-
+#include "syscfg/syscfg.h"
+#include "cap.h"
+static cap_user appcaps;
+#define ARRAY_SIZE(x)  (sizeof(x) / sizeof(x[0]))
+bool g_dropStatus = false;
 
 #ifdef INCLUDE_BREAKPAD
 #include "breakpad_wrapper.h"
@@ -421,6 +425,45 @@ void sig_handler(int sig)
     }
 }
 
+static void drop_root()
+{
+  const cap_value_t cap_add[] = {CAP_KILL};
+  const cap_value_t cap_drop[] = {};
+  char buf[8] = {'\0'};  
+  appcaps.caps = NULL;
+  appcaps.add_count = ARRAY_SIZE(cap_add);
+  appcaps.drop_count = ARRAY_SIZE(cap_drop);
+
+  syscfg_get( NULL, "NonRootSupport", buf, sizeof(buf));
+  if( buf != NULL )  { 
+      if (strncmp(buf, "true", strlen("true")) == 0) {
+          init_capability();
+          prepare_caps(&appcaps,cap_add,cap_drop);
+          drop_root_caps(&appcaps);
+          update_process_caps(&appcaps);
+          read_capability(&appcaps);
+      } 
+  }
+}
+
+static void* waitforsyscfgReady(void *arg)
+{
+  #define TIME_INTERVAL 2000
+  #define MAX_WAIT_TIME 90
+  int times = 0;
+  pthread_detach(pthread_self());
+  while(times++ < MAX_WAIT_TIME)    {
+        if ( 0 != syscfg_init( ) )    {
+             CCSP_Msg_SleepInMilliSeconds(TIME_INTERVAL);
+        }
+        else {
+             g_dropStatus = true;
+             break;
+        }
+  }
+  pthread_exit(NULL);
+}
+
 int main(int argc, char* argv[])
 {
 	int                             cmdChar = 0;
@@ -596,18 +639,25 @@ int main(int argc, char* argv[])
     gather_info();
 
     cmd_dispatch('e');
-	
+
 	system("touch /tmp/cr_initialized");
+    pthread_t EvtThreadId;
+    pthread_create(&EvtThreadId, NULL, &waitforsyscfgReady, NULL);
 
 
     if ( bRunAsDaemon )
     {
 		sem_post (sem);
 		sem_close(sem);
-		while (1)
+		while (1) {
+		       if (g_dropStatus) {
+                            g_dropStatus = false;
+                            drop_root();
+			}
 			sleep(30);
+		}
     }
-    else 
+    else
     {
 		while ( cmdChar != 'q' )
 		{
