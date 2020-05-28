@@ -90,8 +90,12 @@
 #include "ccsp_namespace_mgr.h"
 
 /* define default CR device profile name */
-#define CCSP_CR_DEVICE_PROFILE_XML_FILE             "cr-deviceprofile.xml"
-#define CCSP_CR_ETHWAN_DEVICE_PROFILE_XML_FILE             "cr-ethwan-deviceprofile.xml"
+#define CCSP_CR_DEVICE_PROFILE_XML_FILENAME         "cr-deviceprofile.xml"
+#define CCSP_CR_DEVICE_PROFILE_XML_LOCATION         "/usr/ccsp/"
+#define CCSP_CR_DEVICE_PROFILE_XML_FILE             CCSP_CR_DEVICE_PROFILE_XML_LOCATION CCSP_CR_DEVICE_PROFILE_XML_FILENAME
+
+#define CCSP_CR_ETHWAN_DEVICE_PROFILE_XML_FILENAME  "cr-ethwan-deviceprofile.xml"
+#define CCSP_CR_ETHWAN_DEVICE_PROFILE_XML_FILE      CCSP_CR_DEVICE_PROFILE_XML_LOCATION CCSP_CR_ETHWAN_DEVICE_PROFILE_XML_FILENAME
 
 #define CCSP_ETHWAN_ENABLE "/nvram/ETHWAN_ENABLE"
 
@@ -140,29 +144,33 @@ CcspCrLoadDeviceProfile
     /* load from the file */
     if (access(CCSP_ETHWAN_ENABLE, F_OK) == 0)
     {
-            pFileHandle =
-        AnscOpenFile
+        pFileHandle = AnscOpenFile
         (
             CCSP_CR_ETHWAN_DEVICE_PROFILE_XML_FILE,
             ANSC_FILE_O_BINARY | ANSC_FILE_O_RDONLY,
             ANSC_FILE_S_IREAD
         );
+
+        if( pFileHandle == NULL)
+        {
+            AnscTraceWarning(("Failed to load the file : " CCSP_CR_ETHWAN_DEVICE_PROFILE_XML_FILENAME "'\n"));
+            return FALSE;
+        }
     }
     else
     {
-    pFileHandle =
-        AnscOpenFile
+        pFileHandle = AnscOpenFile
         (
             CCSP_CR_DEVICE_PROFILE_XML_FILE,
             ANSC_FILE_O_BINARY | ANSC_FILE_O_RDONLY,
             ANSC_FILE_S_IREAD
         );
-    }
-    if( pFileHandle == NULL)
-    {
-        AnscTrace("Failed to load the file : '%s'\n", CCSP_CR_DEVICE_PROFILE_XML_FILE);
 
-        return FALSE;
+        if( pFileHandle == NULL)
+        {
+            AnscTraceWarning(("Failed to load the file : " CCSP_CR_DEVICE_PROFILE_XML_FILENAME "'\n"));
+            return FALSE;
+        }
     }
 
     uFileLength = AnscGetFileSize( pFileHandle);
@@ -172,6 +180,7 @@ CcspCrLoadDeviceProfile
     if( pXMLContent == NULL)
     {
         AnscCloseFile(pFileHandle); /*RDKB-6901, CID-33521, free unused resources before exit */
+        AnscTraceWarning(("Failed to allocate memory for pXMLContent'\n"));
         return FALSE;
     }
 
@@ -181,6 +190,7 @@ CcspCrLoadDeviceProfile
     {
         AnscFreeMemory(pXMLContent);
         AnscCloseFile(pFileHandle); /*RDKB-6901, CID-33521, free unused resources before exit */
+        AnscTraceWarning(("AnscReadFile failure for file : " CCSP_CR_DEVICE_PROFILE_XML_FILENAME "'\n"));
         return FALSE;
     }
 
@@ -199,25 +209,25 @@ CcspCrLoadDeviceProfile
 
     if( pXmlNode == NULL)
     {
-        AnscTraceWarning(("Failed to parse the CR profile file.\n"));
+        AnscTraceWarning(("Failed to parse the file : " CCSP_CR_DEVICE_PROFILE_XML_FILENAME "'\n"));
 
         return FALSE;
     }
 
     /* load CR name */
     pChildNode  = (PANSC_XML_DOM_NODE_OBJECT)
-		AnscXmlDomNodeGetChildByName(pXmlNode, CCSP_CR_XML_NODE_crName); 
+    AnscXmlDomNodeGetChildByName(pXmlNode, CCSP_CR_XML_NODE_crName);
 
     if( pChildNode != NULL && pChildNode->GetDataString(pChildNode, NULL, buffer, &uLength) == ANSC_STATUS_SUCCESS && uLength > 0)
     {
         pMyObject->pCRName = AnscCloneString(buffer);
+        AnscTrace("Setting CRName: %s,based on file : '%s'\n", pMyObject->pCRName, CCSP_CR_DEVICE_PROFILE_XML_FILENAME);
     }
     else
     {
         pMyObject->pCRName = AnscCloneString(CCSP_CR_NAME);
+        AnscTrace("Setting default CR Name: %s \n", pMyObject->pCRName);
     }
-
-    AnscTraceWarning(("CR Name: %s\n", pMyObject->pCRName));
 
 #if 0
     /* load prefix name */
