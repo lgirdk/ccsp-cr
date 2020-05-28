@@ -126,7 +126,7 @@ CcspCreateCR
      * Initialize the common variables and functions.
      */
     pThisObject->pDeviceName                        = CcspCrCloneString(CCSP_CR_NAME);
-    pThisObject->pCRName                            = NULL;
+    pThisObject->pCRName                            = CcspCrCloneString(CCSP_CR_NAME);
     pThisObject->pPrefix                            = NULL;
     pThisObject->uVersion                           = 1;
     pThisObject->bSystemReady                       = FALSE;
