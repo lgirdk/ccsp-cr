@@ -636,6 +636,8 @@ int main(int argc, char* argv[])
     signal(SIGPIPE, SIG_IGN);
 
 #endif
+    t2_init("ccsp-cr");
+  
     gather_info();
 
     cmd_dispatch('e');
