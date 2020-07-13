@@ -626,25 +626,25 @@ CcspCrProcessDbusRequest
 
         if(param_size)
         {
-            val = AnscAllocateMemory(param_size*sizeof(name_spaceType_t* ));
+            val = AnscAllocateMemory(sizeof(name_spaceType_t *) * param_size);
 
             if( val == NULL)
             {
                 return DBUS_HANDLER_RESULT_HANDLED;
             }
 
-            memset(val, 0, param_size*sizeof(name_spaceType_t* ));
+            memset(val, 0, sizeof(name_spaceType_t *) * param_size);
         }
 
         for(i = 0; i < param_size; i++)
         {
             DBUS_MESSAGE_ITER_RECURSE_SRV(&array_iter, &struct_iter , DBUS_TYPE_STRUCT, val, bus_info->freefunc);
 
-            val[i] = AnscAllocateMemory(param_size*sizeof(name_spaceType_t ));
+            val[i] = AnscAllocateMemory(sizeof(name_spaceType_t));
 
             if( val[i] != NULL)
             {
-                memset(val[i], 0, param_size*sizeof(name_spaceType_t ));
+                memset(val[i], 0, sizeof(name_spaceType_t));
 
                 if(dbus_message_iter_get_arg_type (&struct_iter) == DBUS_TYPE_STRING)
                 {
