@@ -1280,6 +1280,77 @@ int CcspCcMbi_GetHealth()
     return g_crHealth;
 }
 
+void CcspCrProcessRegisterCap(char* pCompName, void* user_data)
+{
+    PCCSP_COMPONENT_INFO            pCompInfo         = (PCCSP_COMPONENT_INFO)NULL;
+    PSINGLE_LINK_ENTRY              pSLinkEntry       = (PSINGLE_LINK_ENTRY)NULL;
+    (void) user_data;
+
+    /* check whether this component is in the profile or not */
+    pCompInfo = (PCCSP_COMPONENT_INFO) CcspCrLookforComponent(g_pCcspCrMgr, pCompName);
+
+    if( pCompInfo == NULL)
+    {
+        AnscTraceWarning(("Unknown Registered Component:  %s\n", pCompName));
+        return;
+    }
+
+    AnscTraceWarning(("Registering Component:  %s\n", pCompName));
+
+    pCompInfo->uStatus = CCSP_Component_RegSuccessful;
+
+    /* check whether system is ready or not */
+    if(!g_pCcspCrMgr->bSystemReady)
+    {
+        pSLinkEntry = AnscQueueGetFirstEntry(&g_pCcspCrMgr->CompInfoQueue);
+
+        while ( pSLinkEntry )
+        {
+            pCompInfo       = ACCESS_CCSP_COMPONENT_INFO(pSLinkEntry);
+            pSLinkEntry     = AnscQueueGetNextEntry(pSLinkEntry);
+
+            AnscTraceWarning(("CcspCrRegisterCapabilities - print component %s with status %d\n",
+                    pCompInfo->pComponentName, pCompInfo->uStatus));
+        }
+
+        pSLinkEntry = AnscQueueGetFirstEntry(&g_pCcspCrMgr->CompInfoQueue);
+
+        while ( pSLinkEntry )
+        {
+            pCompInfo       = ACCESS_CCSP_COMPONENT_INFO(pSLinkEntry);
+            pSLinkEntry     = AnscQueueGetNextEntry(pSLinkEntry);
+
+            AnscTraceWarning(("CcspCrRegisterCapabilities - component %s status %d\n",
+                    pCompInfo->pComponentName, pCompInfo->uStatus));
+
+            if( pCompInfo->uStatus != CCSP_Component_RegSuccessful)
+            {
+                break;
+            }
+        }
+
+        if( pSLinkEntry == NULL)
+        {
+            g_pCcspCrMgr->bSystemReady = TRUE;
+
+            /* send out System Ready event */
+            AnscTraceWarning(("From CR: System is ready...\n"));
+
+            if( g_pCcspCrMgr->SignalProc.SignalSystemReadyProc != NULL)
+            {
+                g_pCcspCrMgr->SignalProc.SignalSystemReadyProc(g_pCcspCrMgr->hDbusHandle);
+            }
+        }
+    }
+
+    return;
+}
+
+int ccspCrSystemReady ()
+{
+    return (int) g_pCcspCrMgr->IsSystemReady(g_pCcspCrMgr);
+}
+
 void InitDbus()
 {
 #ifndef WIN32
@@ -1310,9 +1381,17 @@ void InitDbus()
     g_pCcspCrMgr->SignalProc.SignalProfileChangeProc  = CcspBaseIf_SenddeviceProfileChangeSignal;
     g_pCcspCrMgr->SignalProc.SignalSessionChangeProc  = CcspBaseIf_SendcurrentSessionIDSignal;
 
-    CCSP_Message_Bus_Register_Path(g_pDbusHandle,CCSP_DBUS_PATH_CR, CcspCrProcessDbusRequest, g_pDbusHandle);
-
     memset(&cb, 0, sizeof(cb));
+    if (CCSP_Msg_IsRbus_enabled())
+    {
+        cb.registerCaps  = CcspCrProcessRegisterCap;
+        cb.isSystemReady = ccspCrSystemReady;
+    }
+    else
+    {
+        CCSP_Message_Bus_Register_Path(g_pDbusHandle,CCSP_DBUS_PATH_CR, CcspCrProcessDbusRequest, g_pDbusHandle);
+    }
+
 
     cb.getParameterValues     = CcspCcMbi_GetParameterValues;
     cb.setParameterValues     = CcspCcMbi_SetParameterValues;
