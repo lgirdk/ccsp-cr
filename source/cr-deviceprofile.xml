@@ -22,9 +22,9 @@
     <version>1</version>
     <deviceName>VideoScape EP1.0</deviceName>
     <components>
-        <component>
+        <!-- <component>
             <name>com.cisco.spvtg.ccsp.tr069pa</name> <version>1</version>
-        </component>
+        </component> -->
 	    <component>
 	        <name>com.cisco.spvtg.ccsp.pam</name> <version>1</version>
 	    </component>
