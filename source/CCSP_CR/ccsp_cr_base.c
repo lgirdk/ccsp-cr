@@ -308,7 +308,7 @@ CcspCrCloneString
   )
 {
     char*                       pNewString  = NULL;
-    ULONG                       ulSize      = NULL;
+    ULONG                       ulSize      = 0;
 
     if( pString == NULL)
     {

@@ -50,6 +50,8 @@
 #include "ssp_global.h"
 #include "syscfg/syscfg.h"
 #include "cap.h"
+#include "telemetry_busmessage_sender.h"
+
 static cap_user appcaps;
 
 bool g_dropStatus = false;
@@ -444,6 +446,7 @@ static void drop_root()
 
 static void* waitforsyscfgReady(void *arg)
 {
+  UNREFERENCED_PARAMETER(arg);
   #define TIME_INTERVAL 2000
   #define MAX_WAIT_TIME 90
   int times = 0;
@@ -462,14 +465,14 @@ static void* waitforsyscfgReady(void *arg)
 
 int main(int argc, char* argv[])
 {
-	int                             cmdChar = 0;
-    int                             idx     = 0;
-    BOOL                            bRunAsDaemon       = TRUE;
-	char                            cmd[1024]          = {0};
-    FILE                           *fd                 = NULL;
-    int 							FileDescriptor,rc;
+    int cmdChar = 0;
+    int idx     = 0;
+    BOOL bRunAsDaemon = TRUE;
+    char cmd[1024] = {0};
+    FILE *fd = NULL;
+    int rc;
 #ifdef _ANSC_LINUX
-    sem_t *sem;
+    sem_t *sem = NULL;
 #endif
 
     pComponentName = CCSP_DBUS_INTERFACE_CR;
@@ -581,7 +584,7 @@ int main(int argc, char* argv[])
 		}
 	
 #ifndef  _DEBUG
-	
+                int FileDescriptor;
 		FileDescriptor = open("/dev/null", O_RDONLY);
 		if (FileDescriptor != 0) {
 			dup2(FileDescriptor, 0);

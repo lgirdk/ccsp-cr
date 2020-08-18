@@ -73,8 +73,8 @@
 #define END_XML_STR  "</parameters></dataModel>\n<baselineConfiguration/>\n </deviceType>"
 
 extern PCCSP_CR_MANAGER_OBJECT                     g_pCcspCrMgr;
-static g_NodeCount = 0;
-static g_WriteNodeCount = 0;
+static int g_NodeCount = 0;
+static int g_WriteNodeCount = 0;
 
 typedef struct _STR_LIST
 {
@@ -125,7 +125,7 @@ void WriteXmlHead(FILE *file)
     extern void*  g_pDbusHandle ;
     char* pParamNames[] = {"Device.DeviceInfo.Manufacturer", "Device.DeviceInfo.ManufacturerOUI", "Device.DeviceInfo.ProductClass", "Device.DeviceInfo.ModelName",  "Device.DeviceInfo.SoftwareVersion"};
     parameterValStruct_t**  ppReturnVal        = NULL;
-    ULONG valCount = 0;
+    int valCount = 0;
     fprintf(file, "%s", "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n");
     fprintf(file, "%s", "<deviceType xsi:schemaLocation=\"urn:dslforum-org:hdm-0-0 deviceType.xsd\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"urn:dslforum-org:hdm-0-0\">");
     fprintf(file, "%s", "<protocol>DEVICE_PROTOCOL_DSLFTR069v1</protocol>\n");
@@ -209,7 +209,6 @@ void AddNodeToDMTree(TREE_NODE *multiTree, STR_LIST *pStrHead)//, unsigned int d
     TREE_NODE *pCurPosNode = multiTree;
     STR_LIST  *pTmpNode    = pStrHead;    
     unsigned int index = 0;
-    BOOLEAN flag = false;
    
     /*find the pos to insert node*/     
     while(pTmpNode)
@@ -238,7 +237,6 @@ void AddNodeToDMTree(TREE_NODE *multiTree, STR_LIST *pStrHead)//, unsigned int d
                     {                        
                         //pTmpNode = pTmpNode->next;
                         pCurPosNode = pCurPosNode->children[index];
-                        //flag = true;
                         break;
                     }
                 }                    
@@ -274,7 +272,7 @@ void setTypeField(STR_LIST *pStrHead, unsigned int type)
 void BuildDataModelTree(TREE_NODE *multiTree, name_spaceType_t** ppStringArray, ULONG ulSize)
 {
     STR_LIST *pStrHead = NULL;
-    int j ;   
+    ULONG j ;   
 
     for( j = 0; j < ulSize; j ++)
     {
@@ -332,7 +330,6 @@ void freeNode(TREE_NODE *pCurPosNode)
 void WriteMultiTreeToXML(FILE *file, TREE_NODE *multiTree)
 {
     TREE_NODE *pCurPosNode = multiTree;
-    TREE_NODE *pTmpNode = NULL;    
     int index = 0;
     //printfNode(pCurPosNode);
     if(!pCurPosNode->flag)
@@ -391,8 +388,7 @@ void GenerateDataModelXml()
 
     TREE_NODE *multiTree = NULL;
     ULONG                            ulSize            = 0;
-    int                              i                 = 0;
-    int                              j                 = 0;
+    ULONG                            i                 = 0;
 
     printf("strart to generate alldatamodel.xml file\n");
     InitDMTreeRoot(&multiTree);

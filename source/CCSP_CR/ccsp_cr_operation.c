@@ -482,7 +482,7 @@ CcspCrDiscoverComponentSupportingNamespace
                     pNamespace,
                     pPrefix,
                     &ppCompStruct,
-                    pulSize
+                    (int*)pulSize
                 );
 
             *ppComponent = (PVOID*)ppCompStruct;
@@ -544,7 +544,6 @@ CcspCrDiscoverComponentSupportingDynamicTbl
 {
     PCCSP_CR_MANAGER_OBJECT         pMyObject         = (PCCSP_CR_MANAGER_OBJECT)hCcspCr;
     PCCSP_NAMESPACE_MGR_OBJECT      pNSMgr            = (PCCSP_NAMESPACE_MGR_OBJECT)pMyObject->hCcspNamespaceMgr;
-    PCCSP_COMPONENT_INFO            pCompInfo         = (PCCSP_COMPONENT_INFO)NULL;
     PVOID*                          pComponent        = NULL;
     ULONG                           ulSize            = 0;
     int                             iStatus           = CCSP_SUCCESS;
@@ -641,8 +640,6 @@ CcspCrCheckNamespaceDataType
 {
     PCCSP_CR_MANAGER_OBJECT         pMyObject         = (PCCSP_CR_MANAGER_OBJECT)hCcspCr;
     PCCSP_NAMESPACE_MGR_OBJECT      pNSMgr            = (PCCSP_NAMESPACE_MGR_OBJECT)pMyObject->hCcspNamespaceMgr;
-    PCCSP_COMPONENT_INFO            pCompInfo         = (PCCSP_COMPONENT_INFO)NULL;
-    int                             iStatus           = CCSP_SUCCESS;
 
     return pNSMgr->CheckNamespaceDataType(pNSMgr, pNamespace, uType, pbMatch);
 }

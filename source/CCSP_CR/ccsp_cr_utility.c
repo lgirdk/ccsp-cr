@@ -177,7 +177,6 @@ ccspStringEndswith
         char*                       pStrEnds
     )
 {
-    int                             uLength  = AnscSizeOfString(pString);
     char*                           pLooking = _ansc_strstr(pString, pStrEnds);
 
     if( pLooking == NULL)
@@ -214,7 +213,7 @@ CcspCrLookforComponent
         /* Since component in the device profile doesn't have prefix included while registerCapabilities does,
          * we don't need a perfect match here */
         /* if ( pCompName != NULL && AnscEqualString(pCompInfo->pComponentName, (char*)pCompName, TRUE)) */
-        if ( pCompName != NULL && ccspStringEndswith(pCompName, pCompInfo->pComponentName))
+        if ( pCompName != NULL && ccspStringEndswith((char*)pCompName, pCompInfo->pComponentName))
         {
             return  (ANSC_HANDLE)pCompInfo;
         }
