@@ -178,12 +178,20 @@ static const char* CR_Introspect_msg =
     "</node>\n"
     ;
 
+ANSC_HANDLE
+CcspCrLookforComponent
+    (
+        ANSC_HANDLE                 hCcspCr,
+        const char*                 pCompName
+    );
+
 char*
 ssp_CcdIfGetComponentName
     (
         ANSC_HANDLE                     hThisObject
     )
 {
+    UNREFERENCED_PARAMETER(hThisObject);
     return g_pCcspCrMgr->pCRName;
 }
 
@@ -194,6 +202,7 @@ ssp_CcdIfGetComponentVersion
         ANSC_HANDLE                     hThisObject
     )
 {
+    UNREFERENCED_PARAMETER(hThisObject);
     return g_pCcspCrMgr->uVersion;
 }
 
@@ -204,6 +213,7 @@ ssp_CcdIfGetComponentAuthor
         ANSC_HANDLE                     hThisObject
     )
 {
+    UNREFERENCED_PARAMETER(hThisObject);
     return "CCSP AUSTIN TEAM";
 }
 
@@ -214,6 +224,7 @@ ssp_CcdIfGetComponentHealth
         ANSC_HANDLE                     hThisObject
     )
 {
+    UNREFERENCED_PARAMETER(hThisObject);
     if( g_pCcspCrMgr->IsSystemReady(g_pCcspCrMgr))
     {
         return 3;  /* Green */
@@ -231,6 +242,7 @@ ssp_CcdIfGetComponentState
         ANSC_HANDLE                     hThisObject
     )
 {
+    UNREFERENCED_PARAMETER(hThisObject);
     if( g_pCcspCrMgr->IsSystemReady(g_pCcspCrMgr))
     {
         return 1;  /* Running */
@@ -249,6 +261,7 @@ ssp_CcdIfGetLoggingEnabled
         ANSC_HANDLE                     hThisObject
     )
 {
+    UNREFERENCED_PARAMETER(hThisObject);
     return bLogEnable;
 }
 
@@ -260,6 +273,7 @@ ssp_CcdIfSetLoggingEnabled
         BOOL                            bEnabled
     )
 {
+    UNREFERENCED_PARAMETER(hThisObject);
     bLogEnable = bEnabled;
     
     if (!bEnabled)
@@ -276,6 +290,7 @@ ssp_CcdIfGetLoggingLevel
         ANSC_HANDLE                     hThisObject
     )
 {
+    UNREFERENCED_PARAMETER(hThisObject);
     return ulLogLevel;
 }
 
@@ -286,6 +301,7 @@ ssp_CcdIfSetLoggingLevel
         ULONG                           LogLevel
     )
 {
+    UNREFERENCED_PARAMETER(hThisObject);
     if(ulLogLevel == LogLevel) return ANSC_STATUS_SUCCESS;
     ulLogLevel = LogLevel;
 
@@ -302,6 +318,7 @@ ssp_CcdIfGetMemMaxUsage
         ANSC_HANDLE                     hThisObject
     )
 {
+    UNREFERENCED_PARAMETER(hThisObject);
     return g_ulAllocatedSizePeak;
 }
 
@@ -312,6 +329,7 @@ ssp_CcdIfGetMemMinUsage
         ANSC_HANDLE                     hThisObject
     )
 {
+    UNREFERENCED_PARAMETER(hThisObject);
     return g_ulAllocatedSizeInit;
 }
 
@@ -322,7 +340,7 @@ ssp_CcdIfGetMemConsumed
         ANSC_HANDLE                     hThisObject
     )
 {
-
+    UNREFERENCED_PARAMETER(hThisObject);
     LONG             size = 0;
 
     size = AnscGetComponentMemorySize(pComponentName);
@@ -340,6 +358,7 @@ ssp_CcdIfApplyChanges
         ANSC_HANDLE                     hThisObject
     )
 {
+    UNREFERENCED_PARAMETER(hThisObject);
     ANSC_STATUS                         returnStatus    = ANSC_STATUS_SUCCESS;
     /* Assume the parameter settings are committed immediately. */
     /* AnscSetTraceLevel(g_iTraceLevel); */
@@ -411,7 +430,7 @@ discNamespaceSupportedByComponent
     int*                val_size
 )
 {
-    return g_pCcspCrMgr->GetNamespaceByComponent(g_pCcspCrMgr, component_name, (PVOID**)name_space, val_size);
+    return g_pCcspCrMgr->GetNamespaceByComponent(g_pCcspCrMgr, component_name, (PVOID**)name_space, (ULONG*)val_size);
 }
 
 int getRegisteredComponents 
@@ -420,7 +439,7 @@ int getRegisteredComponents
     int*                        val_size
 )
 {
-    return g_pCcspCrMgr->GetRegisteredComponents(g_pCcspCrMgr, components, val_size);
+    return g_pCcspCrMgr->GetRegisteredComponents(g_pCcspCrMgr, (PVOID**)components, (ULONG*)val_size);
 }
 
 int 
@@ -432,6 +451,7 @@ checkNamespaceDataType
     dbus_bool *         typeMatch
 )
 {
+    UNREFERENCED_PARAMETER(subsystem_prefix);
     return g_pCcspCrMgr->CheckNamespaceDataType(g_pCcspCrMgr, name_space, data_type, (BOOL*)typeMatch);
 }
 
@@ -461,7 +481,7 @@ requestSessionID
     int*                pSessionID
 )
 {
-    return g_pCcspCrMgr->RequestSessionID(g_pCcspCrMgr, priority, pSessionID);
+    return g_pCcspCrMgr->RequestSessionID(g_pCcspCrMgr, priority, (ULONG*)pSessionID);
 }
 
 int 
@@ -471,7 +491,7 @@ getCurrentSessionID
     int*                pSessionID
 )
 {
-    return g_pCcspCrMgr->GetCurrentSessionID(g_pCcspCrMgr, pPriority, pSessionID);
+    return g_pCcspCrMgr->GetCurrentSessionID(g_pCcspCrMgr, (ULONG*)pPriority, (ULONG*)pSessionID);
 }
 
 int 
@@ -491,6 +511,8 @@ int freeResources
     void            *user_data
 )
 {
+    UNREFERENCED_PARAMETER(priority);
+    UNREFERENCED_PARAMETER(user_data);
     return CCSP_SUCCESS;
 }
 
@@ -500,6 +522,7 @@ int busCheck
     void            *user_data
 )
 {
+    UNREFERENCED_PARAMETER(user_data);
     return CCSP_SUCCESS;
 }
 
@@ -508,6 +531,7 @@ int initialize
     void            *user_data
 )
 {
+    UNREFERENCED_PARAMETER(user_data);
     return CCSP_SUCCESS;
 }
 
@@ -516,6 +540,7 @@ int finalize
     void            *user_data
 )
 {
+    UNREFERENCED_PARAMETER(user_data);
     return CCSP_SUCCESS;
 }
 
@@ -550,7 +575,7 @@ CcspCrProcessDbusRequest
         DBusMessageIter array_iter;
         DBusMessageIter struct_iter;
         dbus_int32_t tmp = 0;
-        int component_version;
+        int component_version = 0;
         dbus_int32_t result = 0;
         char * component_name = 0;
         char * dbus_path = 0;
@@ -706,7 +731,6 @@ CcspCrProcessDbusRequest
         dbus_int32_t tmp = 0;
         dbus_int32_t result = 0;
         char * component_name = 0;
-        name_spaceType_t *val = 0;
 
         dbus_message_iter_init (message, &iter);
         if(dbus_message_iter_get_arg_type (&iter) == DBUS_TYPE_STRING)
@@ -1204,6 +1228,7 @@ waitingForSystemReadyTask(ANSC_HANDLE  hThisObject)
     PCCSP_COMPONENT_INFO            pCompInfo         = (PCCSP_COMPONENT_INFO)NULL;
     PSINGLE_LINK_ENTRY              pSLinkEntry       = (PSINGLE_LINK_ENTRY)NULL;
 
+    UNREFERENCED_PARAMETER(hThisObject);
     /* wait for uWait1 seconds before checking */
     while ( i < uWait1 )
     {
@@ -1371,7 +1396,7 @@ void InitDbus()
         AnscCopyString(CrName, g_pCcspCrMgr->pCRName);
     }
 
-    CCSP_Message_Bus_Init(CrName, CCSP_MSG_BUS_CFG, &g_pDbusHandle, Ansc_AllocateMemory_Callback, Ansc_FreeMemory_Callback);
+    CCSP_Message_Bus_Init(CrName, CCSP_MSG_BUS_CFG, &g_pDbusHandle, (CCSP_MESSAGE_BUS_MALLOC)Ansc_AllocateMemory_Callback, Ansc_FreeMemory_Callback);
 
     sleep(1);
 

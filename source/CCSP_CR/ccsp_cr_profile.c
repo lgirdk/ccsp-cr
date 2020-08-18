@@ -122,11 +122,9 @@ CcspCrLoadDeviceProfile
     )
 {
     PCCSP_CR_MANAGER_OBJECT         pMyObject          = (PCCSP_CR_MANAGER_OBJECT)hCcspCr;
-    PCCSP_NAMESPACE_MGR_OBJECT      pNSMgr             = (PCCSP_NAMESPACE_MGR_OBJECT)pMyObject->hCcspNamespaceMgr;
     ANSC_HANDLE                     pFileHandle        = NULL;
     char*                           pXMLContent        = NULL;
     char*                           pBackContent       = NULL;
-    ULONG                           uXMLLength         = 0;
     PANSC_XML_DOM_NODE_OBJECT       pXmlNode           = (PANSC_XML_DOM_NODE_OBJECT)NULL;
     PANSC_XML_DOM_NODE_OBJECT       pListNode          = (PANSC_XML_DOM_NODE_OBJECT)NULL;
     PANSC_XML_DOM_NODE_OBJECT       pChildNode         = (PANSC_XML_DOM_NODE_OBJECT)NULL;
@@ -222,6 +220,7 @@ CcspCrLoadDeviceProfile
 #if 0
     /* load prefix name */
     /* Prefix will be set from command line instead */
+    PCCSP_NAMESPACE_MGR_OBJECT      pNSMgr             = (PCCSP_NAMESPACE_MGR_OBJECT)pMyObject->hCcspNamespaceMgr;
     uLength            = 511;
     AnscZeroMemory(buffer, 512);
 

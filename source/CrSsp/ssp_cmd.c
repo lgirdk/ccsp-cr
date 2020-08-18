@@ -177,11 +177,11 @@ void CRRegisterTest()
 
         if( i < uCount - 1)
         {
-            _ansc_sprintf(buffer, "Device.DevInfo.param%d", i + 1);
+            _ansc_sprintf(buffer, "Device.DevInfo.param%lu", i + 1);
         }
         else
         {
-            _ansc_sprintf(buffer, "Device.DevInfo.object%d.", i + 1);
+            _ansc_sprintf(buffer, "Device.DevInfo.object%lu.", i + 1);
         }
 
         ppSpaceType[i]->name_space = CcspCrCloneString(buffer);
@@ -189,27 +189,27 @@ void CRRegisterTest()
      }
 
      AnscTrace("Register a component with an unknown object...\n");
-     iStatus = g_pCcspCrMgr->RegisterCapabilities(g_pCcspCrMgr, "CCSP_XXXX", 1, "/com/cisco/spvtg/ccsp/DevInfo", "", ppSpaceType, uCount);
+     iStatus = g_pCcspCrMgr->RegisterCapabilities(g_pCcspCrMgr, "CCSP_XXXX", 1, "/com/cisco/spvtg/ccsp/DevInfo", "", (PVOID*)ppSpaceType, uCount);
      AnscTrace("The result = %d ", iStatus);
      PrintoutStatus(iStatus, TRUE);
 
      AnscTrace("Register a component with an object level name space...\n");
-     iStatus = g_pCcspCrMgr->RegisterCapabilities(g_pCcspCrMgr, "CCSP_DevInfo", 1, "/com/cisco/spvtg/ccsp/DevInfo", "", ppSpaceType, uCount);
+     iStatus = g_pCcspCrMgr->RegisterCapabilities(g_pCcspCrMgr, "CCSP_DevInfo", 1, "/com/cisco/spvtg/ccsp/DevInfo", "", (PVOID*)ppSpaceType, uCount);
      AnscTrace("The result = %d ", iStatus);
      PrintoutStatus(iStatus, TRUE);
 
      AnscTrace("Register a component with mismatched version...\n");
-     iStatus = g_pCcspCrMgr->RegisterCapabilities(g_pCcspCrMgr, "CCSP_DevInfo", 2, "/com/cisco/spvtg/ccsp/DevInfo", "", ppSpaceType, uCount - 1);
+     iStatus = g_pCcspCrMgr->RegisterCapabilities(g_pCcspCrMgr, "CCSP_DevInfo", 2, "/com/cisco/spvtg/ccsp/DevInfo", "", (PVOID*)ppSpaceType, uCount - 1);
      AnscTrace("The result = %d ", iStatus);
      PrintoutStatus(iStatus, TRUE);
 
      AnscTrace("Register a component with correct version...\n");
-     iStatus = g_pCcspCrMgr->RegisterCapabilities(g_pCcspCrMgr, "CCSP_DevInfo", 1, "/com/cisco/spvtg/ccsp/DevInfo", "", ppSpaceType, uCount - 1);
+     iStatus = g_pCcspCrMgr->RegisterCapabilities(g_pCcspCrMgr, "CCSP_DevInfo", 1, "/com/cisco/spvtg/ccsp/DevInfo", "", (PVOID*)ppSpaceType, uCount - 1);
      AnscTrace("The result = %d ", iStatus);
      PrintoutStatus(iStatus, TRUE);
 
      AnscTrace("Register again...\n");
-     iStatus = g_pCcspCrMgr->RegisterCapabilities(g_pCcspCrMgr, "CCSP_DevInfo", 1, "/com/cisco/spvtg/ccsp/DevInfo", "", ppSpaceType, uCount - 1);
+     iStatus = g_pCcspCrMgr->RegisterCapabilities(g_pCcspCrMgr, "CCSP_DevInfo", 1, "/com/cisco/spvtg/ccsp/DevInfo", "", (PVOID*)ppSpaceType, uCount - 1);
      AnscTrace("The result = %d ", iStatus);
      PrintoutStatus(iStatus, TRUE);
 
@@ -236,11 +236,11 @@ void CRRegisterTest()
 
         if( i < uCount/2)
         {
-            _ansc_sprintf(buffer, "Device.DevInfo.DevXXX.param%d", i + 1);
+            _ansc_sprintf(buffer, "Device.DevInfo.DevXXX.param%lu", i + 1);
         }
         else
         {
-            _ansc_sprintf(buffer, "Device.DevInfo.DevXXX.DevYYY.param%d", i + 1);
+            _ansc_sprintf(buffer, "Device.DevInfo.DevXXX.DevYYY.param%lu", i + 1);
         }
 
         ppSpaceType[i]->name_space = CcspCrCloneString(buffer);
@@ -248,7 +248,7 @@ void CRRegisterTest()
      }
 
      AnscTrace("Register component 'CCSP_ObjectSample'...\n");
-     iStatus = g_pCcspCrMgr->RegisterCapabilities(g_pCcspCrMgr, "CCSP_ObjectSample", 1, "/com/cisco/spvtg/ccsp/ObjSample", "", ppSpaceType, uCount);
+     iStatus = g_pCcspCrMgr->RegisterCapabilities(g_pCcspCrMgr, "CCSP_ObjectSample", 1, "/com/cisco/spvtg/ccsp/ObjSample", "", (PVOID*)ppSpaceType, uCount);
      AnscTrace("The result = %d ", iStatus);
      PrintoutStatus(iStatus, TRUE);
 
@@ -281,14 +281,14 @@ void CRRegisterTest()
         }
         else
         {
-            _ansc_sprintf(buffer, "Device.DevInfo.DevXXX.DevTable.{i}.param%d", i + 1);
+            _ansc_sprintf(buffer, "Device.DevInfo.DevXXX.DevTable.{i}.param%lu", i + 1);
             ppSpaceType[i]->name_space = CcspCrCloneString(buffer);
             ppSpaceType[i]->dataType   = rand() % 9;
         }
      }
 
      AnscTrace("Register component 'CCSP_TableSample'...\n");
-     iStatus = g_pCcspCrMgr->RegisterCapabilities(g_pCcspCrMgr, "CCSP_TableSample", 1, "/com/cisco/spvtg/ccsp/TableSample", "", ppSpaceType, uCount);
+     iStatus = g_pCcspCrMgr->RegisterCapabilities(g_pCcspCrMgr, "CCSP_TableSample", 1, "/com/cisco/spvtg/ccsp/TableSample", "", (PVOID*)ppSpaceType, uCount);
      AnscTrace("The result = %d ", iStatus);
      PrintoutStatus(iStatus, TRUE);
 
@@ -298,7 +298,6 @@ void CRRegisterTest()
 
 void CRCheckDataTypeTest()
 {
-    char                             buffer[128]  = { 0 };
     BOOL                             bMatch       = FALSE;
     int                              iStatus      = CCSP_SUCCESS;
 
@@ -413,7 +412,7 @@ void CRDiscoverTest()
      ULONG                        i                  = 0;
 
      AnscTrace("Try to discover from 'Device.' with nextLevel = FALSE ...\n");
-     iStatus = g_pCcspCrMgr->DiscoverComponentSupportingNamespace(g_pCcspCrMgr,"Device.", "", FALSE, &ppDbuspath, &ulSize);
+     iStatus = g_pCcspCrMgr->DiscoverComponentSupportingNamespace(g_pCcspCrMgr,"Device.", "", FALSE, (PVOID**)&ppDbuspath, &ulSize);
 
      if( iStatus != CCSP_SUCCESS)
      {
@@ -442,7 +441,7 @@ void CRDiscoverTest()
      }
 
      AnscTrace("Try to discover from 'Device.' with nextLevel = TRUE ...\n");
-     iStatus = g_pCcspCrMgr->DiscoverComponentSupportingNamespace(g_pCcspCrMgr,"Device.", "", TRUE, &ppDbuspath, &ulSize);
+     iStatus = g_pCcspCrMgr->DiscoverComponentSupportingNamespace(g_pCcspCrMgr,"Device.", "", TRUE, (PVOID**)&ppDbuspath, &ulSize);
 
      if( iStatus != CCSP_SUCCESS)
      {
@@ -471,7 +470,7 @@ void CRDiscoverTest()
      }
 
      AnscTrace("Try to discover from unknown object 'Device.Next.' with nextLevel = TRUE ...\n");
-     iStatus = g_pCcspCrMgr->DiscoverComponentSupportingNamespace(g_pCcspCrMgr,"Device.Next.", "", FALSE, &ppDbuspath, &ulSize);
+     iStatus = g_pCcspCrMgr->DiscoverComponentSupportingNamespace(g_pCcspCrMgr,"Device.Next.", "", FALSE, (PVOID**)&ppDbuspath, &ulSize);
 
      if( iStatus != CCSP_SUCCESS)
      {
@@ -500,7 +499,7 @@ void CRDiscoverTest()
      }
 
      AnscTrace("Try to discover from a table object 'Device.DevInfo.DevXXX.DevTable.3.' with nextLevel = TRUE ...\n");
-     iStatus = g_pCcspCrMgr->DiscoverComponentSupportingNamespace(g_pCcspCrMgr,"Device.DevInfo.DevXXX.DevTable.3.", "", FALSE, &ppDbuspath, &ulSize);
+     iStatus = g_pCcspCrMgr->DiscoverComponentSupportingNamespace(g_pCcspCrMgr,"Device.DevInfo.DevXXX.DevTable.3.", "", FALSE, (PVOID**)&ppDbuspath, &ulSize);
 
      if( iStatus != CCSP_SUCCESS)
      {
@@ -529,7 +528,7 @@ void CRDiscoverTest()
      }
 
      AnscTrace("Try to discover from another object with nextLevel = TRUE ...\n");
-     iStatus = g_pCcspCrMgr->DiscoverComponentSupportingNamespace(g_pCcspCrMgr,"Device.DevInfo.DevXXX.", "", FALSE, &ppDbuspath, &ulSize);
+     iStatus = g_pCcspCrMgr->DiscoverComponentSupportingNamespace(g_pCcspCrMgr,"Device.DevInfo.DevXXX.", "", FALSE, (PVOID**)&ppDbuspath, &ulSize);
 
      if( iStatus != CCSP_SUCCESS)
      {
@@ -558,7 +557,7 @@ void CRDiscoverTest()
      }
 
      AnscTrace("Try to discover a param 'Device.DevInfo.DevXXX.param2'...\n");
-     iStatus = g_pCcspCrMgr->DiscoverComponentSupportingNamespace(g_pCcspCrMgr,"Device.DevInfo.DevXXX.param2", "", FALSE, &ppDbuspath, &ulSize);
+     iStatus = g_pCcspCrMgr->DiscoverComponentSupportingNamespace(g_pCcspCrMgr,"Device.DevInfo.DevXXX.param2", "", FALSE, (PVOID**)&ppDbuspath, &ulSize);
 
      if( iStatus != CCSP_SUCCESS)
      {
@@ -587,7 +586,7 @@ void CRDiscoverTest()
      }
 
      AnscTrace("Try to discover a param under a table 'Device.DevInfo.DevXXX.DevTable.6.param2'...\n");
-     iStatus = g_pCcspCrMgr->DiscoverComponentSupportingNamespace(g_pCcspCrMgr,"Device.DevInfo.DevXXX.DevTable.6.param2", "", FALSE, &ppDbuspath, &ulSize);
+     iStatus = g_pCcspCrMgr->DiscoverComponentSupportingNamespace(g_pCcspCrMgr,"Device.DevInfo.DevXXX.DevTable.6.param2", "", FALSE, (PVOID**)&ppDbuspath, &ulSize);
 
      if( iStatus != CCSP_SUCCESS)
      {
@@ -621,7 +620,7 @@ void CRDiscoverTest()
 
         AnscCopyString(ns, "Device.DevInfo.param1");
 
-         iStatus = g_pCcspCrMgr->DiscoverComponentSupportingNamespace(g_pCcspCrMgr,ns, "", bNextLevel, &ppDbuspath, &ulSize);
+         iStatus = g_pCcspCrMgr->DiscoverComponentSupportingNamespace(g_pCcspCrMgr,ns, "", bNextLevel, (PVOID**)&ppDbuspath, &ulSize);
 
          if( bNextLevel)
          {
@@ -666,7 +665,7 @@ void CRDiscoverTest()
 
         AnscCopyString(ns, "Device.DevInfo.");
 
-         iStatus = g_pCcspCrMgr->DiscoverComponentSupportingNamespace(g_pCcspCrMgr,ns, "", bNextLevel, &ppDbuspath, &ulSize);
+         iStatus = g_pCcspCrMgr->DiscoverComponentSupportingNamespace(g_pCcspCrMgr,ns, "", bNextLevel, (PVOID**)&ppDbuspath, &ulSize);
 
          if( bNextLevel)
          {
@@ -759,14 +758,14 @@ void CRUnregisterTest()
            return;
         }
 
-        _ansc_sprintf(buffer, "Device.DevInfo.param%d", i + 1);
+        _ansc_sprintf(buffer, "Device.DevInfo.param%lu", i + 1);
 
         ppSpaceType[i]->name_space = CcspCrCloneString(buffer);
         ppSpaceType[i]->dataType   = rand() % 9;
      }
 
      AnscTrace("Register a component with correct version...\n");
-     iStatus = g_pCcspCrMgr->RegisterCapabilities(g_pCcspCrMgr, "CCSP_DevInfo", 1, "/com/cisco/spvtg/ccsp/DevInfo", "",ppSpaceType, uCount - 1);
+     iStatus = g_pCcspCrMgr->RegisterCapabilities(g_pCcspCrMgr, "CCSP_DevInfo", 1, "/com/cisco/spvtg/ccsp/DevInfo", "", (PVOID*)ppSpaceType, uCount - 1);
      AnscTrace("The result = %d ", iStatus);
      PrintoutStatus(iStatus, TRUE);
 
@@ -781,8 +780,8 @@ void CRComponentTest()
     name_spaceType_t**               ppStringArray     = NULL;
 
     ULONG                            ulSize            = 0;
-    int                              i                 = 0;
-    int                              j                 = 0;
+    ULONG                            i                 = 0;
+    ULONG                            j                 = 0;
 
     g_pCcspCrMgr->GetRegisteredComponents(g_pCcspCrMgr, (PVOID**)&ppComponentArray, &ulArraySize);
 
