@@ -51,7 +51,7 @@
 #include "syscfg/syscfg.h"
 #include "cap.h"
 static cap_user appcaps;
-#define ARRAY_SIZE(x)  (sizeof(x) / sizeof(x[0]))
+
 bool g_dropStatus = false;
 
 #ifdef INCLUDE_BREAKPAD
@@ -427,18 +427,14 @@ void sig_handler(int sig)
 
 static void drop_root()
 {
-  const cap_value_t cap_add[] = {CAP_KILL};
-  const cap_value_t cap_drop[] = {};
   char buf[8] = {'\0'};  
   appcaps.caps = NULL;
-  appcaps.add_count = ARRAY_SIZE(cap_add);
-  appcaps.drop_count = ARRAY_SIZE(cap_drop);
+  appcaps.user_name = NULL;
 
   syscfg_get( NULL, "NonRootSupport", buf, sizeof(buf));
   if( buf != NULL )  { 
       if (strncmp(buf, "true", strlen("true")) == 0) {
           init_capability();
-          prepare_caps(&appcaps,cap_add,cap_drop);
           drop_root_caps(&appcaps);
           update_process_caps(&appcaps);
           read_capability(&appcaps);
