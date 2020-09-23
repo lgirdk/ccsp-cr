@@ -315,7 +315,7 @@ int main(int argc, char* argv[])
             return 1;
         }
 
-	system("touch /tmp/cr_initialized");
+	system("touch /tmp/cr_initialized; print_uptime boot_to_cr_uptime");
 
     if ( bRunAsDaemon )
     {
