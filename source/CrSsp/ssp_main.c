@@ -661,7 +661,8 @@ int main(int argc, char* argv[])
         cmd_dispatch('e');
     }
 
-	system("touch /tmp/cr_initialized");
+    system("touch /tmp/cr_initialized; print_uptime boot_to_cr_uptime");
+
     pthread_t EvtThreadId;
     pthread_create(&EvtThreadId, NULL, &waitforsyscfgReady, NULL);
 
