@@ -84,7 +84,7 @@ int                                         g_crHealth = CCSP_COMMON_COMPONENT_H
  */
 BOOLEAN                                     g_exportAllDM = false;
 
-int  cmd_dispatch(int  command)
+static int cmd_dispatch (int command)
 {    
     switch ( command )
     {
@@ -321,7 +321,7 @@ int  cmd_dispatch(int  command)
 }
 
 
-int  gather_info()
+static int gather_info (void)
 {
 	AnscTrace("\n\n");
 	AnscTrace("        ***************************************************************\n");
@@ -360,6 +360,7 @@ int  gather_info()
     return  0;
 }
 
+#ifndef INCLUDE_BREAKPAD
 static void _print_stack_backtrace(void)
 {
 #ifdef __GNUC__
@@ -385,7 +386,7 @@ static void _print_stack_backtrace(void)
 #endif
 }
 
-void sig_handler(int sig)
+static void sig_handler(int sig)
 {
     if ( sig == SIGINT ) {
         signal(SIGINT, sig_handler); /* reset it to this function */
@@ -426,6 +427,7 @@ void sig_handler(int sig)
         exit(0);
     }
 }
+#endif
 
 static void drop_root()
 {

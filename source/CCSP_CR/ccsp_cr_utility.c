@@ -170,8 +170,7 @@ CcspCrLookforRemoteCR
     return:     The handle of found component info;
 
 **********************************************************************/
-BOOL
-ccspStringEndswith
+static BOOL ccspStringEndswith
     (
         char*                       pString,
         char*                       pStrEnds
