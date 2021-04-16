@@ -93,12 +93,12 @@ typedef struct _TREE_NODE
     char str[128];
 }TREE_NODE, PTREE_NODE;
 
-void printfNode(TREE_NODE *pCurPosNode)
+static void printfNode(TREE_NODE *pCurPosNode)
 {
     printf("paraName:%s, count:%d, type:%d\n", pCurPosNode->str, pCurPosNode->count, pCurPosNode->type);
 }
 
-void freeList( STR_LIST *pNode)
+static void freeList( STR_LIST *pNode)
 {
     STR_LIST *pTmpNode = pNode;
     while(pNode)    
@@ -109,7 +109,7 @@ void freeList( STR_LIST *pNode)
     }
 }
 
-void printfList( STR_LIST *pNode)
+static void printfList( STR_LIST *pNode)
 {
     while(pNode)    
     {
@@ -120,7 +120,7 @@ void printfList( STR_LIST *pNode)
 }
 
 
-void WriteXmlHead(FILE *file)
+static void WriteXmlHead(FILE *file)
 {
     extern void*  g_pDbusHandle ;
     char* pParamNames[] = {"Device.DeviceInfo.Manufacturer", "Device.DeviceInfo.ManufacturerOUI", "Device.DeviceInfo.ProductClass", "Device.DeviceInfo.ModelName",  "Device.DeviceInfo.SoftwareVersion"};
@@ -150,7 +150,7 @@ void WriteXmlHead(FILE *file)
     fprintf(file, "%s", ATTRIBUTE_STR);        
 }
 
-STR_LIST  *split_string(char *dataModel)
+static STR_LIST  *split_string(char *dataModel)
 {
     STR_LIST *pStrHead = NULL;
     STR_LIST *pNode   = NULL;
@@ -178,7 +178,7 @@ STR_LIST  *split_string(char *dataModel)
     return pStrHead;    
 }
 
-void AddChildNode(TREE_NODE *parentNode, STR_LIST *pStrHead)//, unsigned int dataType)
+static void AddChildNode(TREE_NODE *parentNode, STR_LIST *pStrHead)//, unsigned int dataType)
 {
     TREE_NODE *pCurPosNode = parentNode;
     TREE_NODE *pNewNode = NULL;
@@ -204,7 +204,7 @@ void AddChildNode(TREE_NODE *parentNode, STR_LIST *pStrHead)//, unsigned int dat
     return;
 }
 
-void AddNodeToDMTree(TREE_NODE *multiTree, STR_LIST *pStrHead)//, unsigned int dataType)
+static void AddNodeToDMTree(TREE_NODE *multiTree, STR_LIST *pStrHead)//, unsigned int dataType)
 {
     TREE_NODE *pCurPosNode = multiTree;
     STR_LIST  *pTmpNode    = pStrHead;    
@@ -246,7 +246,7 @@ void AddNodeToDMTree(TREE_NODE *multiTree, STR_LIST *pStrHead)//, unsigned int d
     }
 }
 
-void setTypeField(STR_LIST *pStrHead, unsigned int type)
+static void setTypeField(STR_LIST *pStrHead, unsigned int type)
 {
     STR_LIST *pTmpNode = NULL;
     for(; pStrHead; pStrHead=pStrHead->next)
@@ -269,7 +269,7 @@ void setTypeField(STR_LIST *pStrHead, unsigned int type)
     }    
 }
 
-void BuildDataModelTree(TREE_NODE *multiTree, name_spaceType_t** ppStringArray, ULONG ulSize)
+static void BuildDataModelTree(TREE_NODE *multiTree, name_spaceType_t** ppStringArray, ULONG ulSize)
 {
     STR_LIST *pStrHead = NULL;
     ULONG j ;   
@@ -295,20 +295,21 @@ void BuildDataModelTree(TREE_NODE *multiTree, name_spaceType_t** ppStringArray, 
     }
 }
 
-char *typeStr[] = {"string", "int", "unsignedInt", "boolean", "dateTime", "base64", "long", "unsignedLong", "float", "double", "byte", "true", "false"};
-void WriteObjectStartToXml(FILE *file, char *paraName, int type)
+static char *typeStr[] = {"string", "int", "unsignedInt", "boolean", "dateTime", "base64", "long", "unsignedLong", "float", "double", "byte", "true", "false"};
+
+static void WriteObjectStartToXml(FILE *file, char *paraName, int type)
 {
     fprintf(file,"<parameter>\n<parameterName>%s</parameterName>\n",  paraName);
     fprintf(file, "<parameterType>object</parameterType>\n");
     fprintf(file, "<array>%s</array>\n<parameters>\n", typeStr[type]);
 }
 
-void WriteSimpleVarToXml(FILE *file, char *paraName, int type)
+static void WriteSimpleVarToXml(FILE *file, char *paraName, int type)
 {
     fprintf(file, "<parameter>\n<parameterName>%s</parameterName>\n<parameterType>%s</parameterType>\n</parameter>\n", paraName, typeStr[type]);
 }
 
-void WriteNodeToXml(FILE *file, TREE_NODE *pNode)
+static void WriteNodeToXml(FILE *file, TREE_NODE *pNode)
 {
     if(pNode->count != 0)
         WriteObjectStartToXml(file, pNode->str, pNode->type);
@@ -317,7 +318,7 @@ void WriteNodeToXml(FILE *file, TREE_NODE *pNode)
     pNode->flag = true;    
 }
 
-void freeNode(TREE_NODE *pCurPosNode)
+static void freeNode(TREE_NODE *pCurPosNode)
 {
     if(pCurPosNode->parent != NULL)
     {
@@ -327,7 +328,7 @@ void freeNode(TREE_NODE *pCurPosNode)
     AnscFreeMemory(pCurPosNode);
 }
 
-void WriteMultiTreeToXML(FILE *file, TREE_NODE *multiTree)
+static void WriteMultiTreeToXML(FILE *file, TREE_NODE *multiTree)
 {
     TREE_NODE *pCurPosNode = multiTree;
     int index = 0;
@@ -348,7 +349,7 @@ void WriteMultiTreeToXML(FILE *file, TREE_NODE *multiTree)
     }      
 }
 
-void WriteDMToXML(TREE_NODE *multiTree)
+static void WriteDMToXML(TREE_NODE *multiTree)
 {    
     FILE *file;
     file = fopen(DM_FILE, "w");
@@ -367,7 +368,7 @@ void WriteDMToXML(TREE_NODE *multiTree)
     
 }
 
-void InitDMTreeRoot(TREE_NODE **multiTree)
+static void InitDMTreeRoot(TREE_NODE **multiTree)
 {
     TREE_NODE *pNode;
     pNode = (TREE_NODE *)AnscAllocateMemory(sizeof(TREE_NODE));

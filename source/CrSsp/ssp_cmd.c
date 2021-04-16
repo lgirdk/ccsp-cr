@@ -49,7 +49,7 @@
 
 extern PCCSP_CR_MANAGER_OBJECT                     g_pCcspCrMgr;
 
-void PrintoutStatus( int iCode, BOOL bReturn)
+static void PrintoutStatus( int iCode, BOOL bReturn)
 {
     switch( iCode)
     {
