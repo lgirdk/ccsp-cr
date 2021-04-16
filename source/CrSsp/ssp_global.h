@@ -88,8 +88,6 @@
 #define  ANSC_TRACE_MODULE_ID                       ANSC_TRACE_ID_SSP
 
 
-void PrintoutStatus( int iCode, BOOL bReturn);
-
 void CRSessionTest();
 
 void CRRegisterTest();
