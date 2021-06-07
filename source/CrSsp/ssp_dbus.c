@@ -1442,7 +1442,10 @@ void InitDbus()
 
 
     /* Listen to certain events */
-    CcspBaseIf_Register_Event(g_pDbusHandle, 0, "NameOwnerChanged");
+    if (!(CCSP_Msg_IsRbus_enabled())) /* NameOwnerChanged is only required for Dbus and not for rbus*/
+    {
+        CcspBaseIf_Register_Event(g_pDbusHandle, 0, "NameOwnerChanged");
+    }
 
     if(g_iTraceLevel >= CCSP_TRACE_LEVEL_EMERGENCY)
         ulLogLevel = (ULONG) g_iTraceLevel;
