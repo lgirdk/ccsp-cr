@@ -638,10 +638,21 @@ int main(int argc, char* argv[])
 
 #endif
     t2_init("ccsp-cr");
-  
-    gather_info();
 
-    cmd_dispatch('e');
+    if(CCSP_Msg_IsRbus_enabled())
+    {
+        if(CRRbusOpen() != 0)
+        {
+            AnscTrace("CRRbusOpen failed\n");
+            return 1;
+        }
+    }
+    else
+    {
+        gather_info();
+
+        cmd_dispatch('e');
+    }
 
 	system("touch /tmp/cr_initialized");
     pthread_t EvtThreadId;
@@ -665,10 +676,19 @@ int main(int argc, char* argv[])
 		while ( cmdChar != 'q' )
 		{
 			cmdChar = getchar();
-			cmd_dispatch(cmdChar);
+
+            if(!CCSP_Msg_IsRbus_enabled())
+            {
+			    cmd_dispatch(cmdChar);
+            }
 		}
     }
 #endif
+
+    if(CCSP_Msg_IsRbus_enabled())
+    {
+        CRRbusClose();
+    }
 
     if ( g_pCcspCrMgr )
     {

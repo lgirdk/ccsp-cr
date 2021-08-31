@@ -108,6 +108,10 @@ void InitDbus();
 
 void ExitDbus();
 
+int CRRbusOpen();
+
+void CRRbusClose();
+
 /*
  *  External functions
  */

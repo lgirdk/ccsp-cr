@@ -26,9 +26,13 @@ ACLOCAL_AMFLAGS = -I m4
 
 bin_PROGRAMS = CcspCrSsp
 
-CcspCrSsp_CPPFLAGS =
 CcspCrSsp_CFLAGS = $(SYSTEMD_CFLAGS)
+CcspCrSsp_LDFLAGS = -lpthread
 
+if RBUS_BUILD_ONLY
+CcspCrSsp_CFLAGS += -DRBUS_MAIN_ENABLED
+CcspCrSsp_SOURCES = CrSsp/ssp_rbus.c
+else
 CcspCrSsp_SOURCES = \
 	CrSsp/ssp_cmd.c \
 	CrSsp/ssp_dbus.c \
@@ -39,6 +43,9 @@ CcspCrSsp_SOURCES = \
 	CCSP_CR/ccsp_cr_profile.c \
 	CCSP_CR/ccsp_cr_session.c \
 	CCSP_CR/ccsp_cr_utility.c
-
-CcspCrSsp_LDFLAGS = -lccsp_common -lsyscfg -ltelemetry_msgsender -lprivilege $(SYSTEMD_LDFLAGS) -lpthread
+CcspCrSsp_LDFLAGS += -lccsp_common -lsyscfg -ltelemetry_msgsender -lprivilege $(SYSTEMD_LDFLAGS) -lpthread
+if RBUS_BUILD_INTEGRATED
+CcspCrSsp_SOURCES += CrSsp/ssp_rbus.c
+endif
+endif
 

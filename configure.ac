@@ -57,6 +57,34 @@ AM_PROG_LIBTOOL(libtool)
 SYSTEMD_CFLAGS=" "
 SYSTEMD_LDFLAGS=" "
 
+#rbus
+AC_ARG_WITH([rbus-build],
+[AC_HELP_STRING([--with-rbus-build={none,only,integrated}],
+                [specify how to build an rbus enabled component])],
+[case x"$withval" in
+   xnone)
+     RBUS_BUILD=none
+     ;;
+   xonly)
+     RBUS_BUILD=only
+     ;;
+   xintegrated)
+     RBUS_BUILD=integrated
+     ;;
+   *)
+     AC_MSG_ERROR([$withval is an invalid option to --with-rbus-build])
+     ;;
+ esac],
+[RBUS_BUILD=integrated])
+if test x"${RBUS_BUILD}" != x; then
+  AC_DEFINE_UNQUOTED(RBUS_BUILD, "$RBUS_BUILD",
+                     [The rbus build type])
+fi
+AM_CONDITIONAL(RBUS_BUILD_NONE, test "x$RBUS_BUILD" = xnone)
+AM_CONDITIONAL(RBUS_BUILD_ONLY, test "x$RBUS_BUILD" = xonly)
+AM_CONDITIONAL(RBUS_BUILD_INTEGRATED, test "x$RBUS_BUILD" = xintegrated)
+#done rbus
+
 AC_ARG_ENABLE([notify],
         AS_HELP_STRING([--enable-notify],[enable systemd notify]),
         [
