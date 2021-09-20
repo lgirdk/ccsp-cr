@@ -297,7 +297,7 @@ static rbusError_t getCcspLegacyPropHandler(rbusHandle_t handle, rbusProperty_t 
     {
         rbusValue_t value;
         rbusValue_Init(&value);
-        rbusValue_SetInt32(value, g_crData->isSystemReady ? 3 : 2);
+        rbusValue_SetInt32(value, 3);
         rbusProperty_SetValue(property, value);
         rbusValue_Release(value);
         return RBUS_ERROR_SUCCESS;
@@ -312,47 +312,33 @@ static rbusError_t getCcspLegacyPropHandler(rbusHandle_t handle, rbusProperty_t 
   Name is used by task_health_monitor.sh on some devices to determine if Cr is 'crashed' or not
   Health might be used by parodus2cssp or other processes.
  */
-static rbusError_t regCcspLegacyProperties(rbusHandle_t handle)
+static rbusError_t regCcspLegacyProperties(rbusHandle_t handle, int add)
 {
     rbusError_t rc;
     char name[RBUS_MAX_NAME_LENGTH];
     char health[RBUS_MAX_NAME_LENGTH];
+    #define NUM_LEG_ELEMS 2
 
     snprintf(name, RBUS_MAX_NAME_LENGTH, "%s.Name", CR_COMPONENT_ID);
     snprintf(health, RBUS_MAX_NAME_LENGTH, "%s.Health", CR_COMPONENT_ID);
 
-    rbusDataElement_t elems[2] = {
+    rbusDataElement_t elems[NUM_LEG_ELEMS] = {
         {name, RBUS_ELEMENT_TYPE_PROPERTY, {getCcspLegacyPropHandler, NULL, NULL, NULL, NULL, NULL}},
         {health, RBUS_ELEMENT_TYPE_PROPERTY, {getCcspLegacyPropHandler, NULL, NULL, NULL, NULL, NULL}}
     };
 
-    rc = rbus_regDataElements(handle, 2, elems);
-    if(rc != RBUS_ERROR_SUCCESS)
+    if(add)
     {
-        CRLOG_ERROR("regCcspLegacyProperties rbus_regDataElements failed: %d", rc);
+        rc = rbus_regDataElements(handle, NUM_LEG_ELEMS, elems);
     }
-    return rc;
-}
+    else
+    {
+        rc = rbus_unregDataElements(handle, NUM_LEG_ELEMS, elems);
+    }
 
-static int unregCcspLegacyProperties(rbusHandle_t handle)
-{
-    rbusError_t rc;
-    char name[RBUS_MAX_NAME_LENGTH];
-    char health[RBUS_MAX_NAME_LENGTH];
-
-    snprintf(name, RBUS_MAX_NAME_LENGTH, "%s.Name", CR_COMPONENT_ID);
-    snprintf(health, RBUS_MAX_NAME_LENGTH, "%s.Health", CR_COMPONENT_ID);
-
-    rbusDataElement_t elems[2] = {
-        {name, RBUS_ELEMENT_TYPE_PROPERTY, {getCcspLegacyPropHandler, NULL, NULL, NULL, NULL, NULL}},
-        {health, RBUS_ELEMENT_TYPE_PROPERTY, {getCcspLegacyPropHandler, NULL, NULL, NULL, NULL, NULL}}
-    };
-
-
-    rc = rbus_unregDataElements(handle, 2, elems);
     if(rc != RBUS_ERROR_SUCCESS)
     {
-        CRLOG_ERROR("unregCcspLegacyProperties rbus_unregDataElements failed: %d", rc);
+        CRLOG_ERROR("regCcspLegacyProperties rbus_%sDataElements failed: %d", add ? "reg" : "unreg", rc);
     }
     return rc;
 }
@@ -562,7 +548,7 @@ int CRRbusOpen()
         goto exit1;
     }
 
-    rc = regCcspLegacyProperties(g_hRbus);
+    rc = regCcspLegacyProperties(g_hRbus, 1);
     if(rc != RBUS_ERROR_SUCCESS)
     {
         CRLOG_ERROR("regCcspLegacyProperties failed: %d", rc);
@@ -611,7 +597,7 @@ void CRRbusClose()
         int rc;
         CR_DATA_ELEMENTS;
 
-        rc = unregCcspLegacyProperties(g_hRbus);
+        rc = regCcspLegacyProperties(g_hRbus, 0);
         if(rc != RBUS_ERROR_SUCCESS)
             CRLOG_ERROR("unregCcspLegacyProperties failed: %d", rc);
 
