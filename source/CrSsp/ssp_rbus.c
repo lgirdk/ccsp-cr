@@ -369,10 +369,10 @@ static rbusError_t methodHandler(rbusHandle_t handle, char const* methodName, rb
     {
         rbusValue_t name = rbusObject_GetValue(inParams, "name");
         rbusValue_t version = rbusObject_GetValue(inParams, "version");
-        if(name)
+        if(name && rbusValue_GetType(name) == RBUS_STRING && rbusValue_GetString(name, NULL))
         {
             int nver = 1;
-            if(version)
+            if(version && rbusValue_GetType(name) == RBUS_INT32)
                 nver = rbusValue_GetInt32(version);
             crData_RegisterComponent(g_crData, rbusValue_GetString(name, NULL), nver);
             return RBUS_ERROR_SUCCESS;
