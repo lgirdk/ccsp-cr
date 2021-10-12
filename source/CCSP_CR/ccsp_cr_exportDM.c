@@ -128,13 +128,18 @@ static void WriteXmlHead(FILE *file)
     extern void*  g_pDbusHandle ;
     char* pParamNames[] = {"Device.DeviceInfo.Manufacturer", "Device.DeviceInfo.ManufacturerOUI", "Device.DeviceInfo.ProductClass", "Device.DeviceInfo.ModelName",  "Device.DeviceInfo.SoftwareVersion"};
     parameterValStruct_t**  ppReturnVal        = NULL;
-    int valCount = 0;
+    int valCount = 0, ret;
     fprintf(file, "%s", "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n");
     fprintf(file, "%s", "<deviceType xsi:schemaLocation=\"urn:dslforum-org:hdm-0-0 deviceType.xsd\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"urn:dslforum-org:hdm-0-0\">");
     fprintf(file, "%s", "<protocol>DEVICE_PROTOCOL_DSLFTR069v1</protocol>\n");
     if(NULL == g_pDbusHandle)
         printf("g_pDbusHanle is NULL\n");
-    CcspBaseIf_getParameterValues(g_pDbusHandle, "com.cisco.spvtg.ccsp.tdm", "/com/cisco/spvtg/ccsp/tdm", pParamNames, 5, &valCount, &ppReturnVal);
+    /* CID 57006 - Unchecked return value */
+    ret = CcspBaseIf_getParameterValues(g_pDbusHandle, "com.cisco.spvtg.ccsp.tdm", "/com/cisco/spvtg/ccsp/tdm", pParamNames, 5, &valCount, &ppReturnVal);
+    if (CCSP_Message_Bus_OK != ret)
+    {
+         CcspTraceInfo(("%s CcspBaseIf_getParameterValue error %d\n", __FUNCTION__,ret));
+    }
     //CcspCcMbi_GetParameterValues(pParamNames, 5, &valCount, &ppReturnVal, NULL);
     if(valCount < 5)
     {

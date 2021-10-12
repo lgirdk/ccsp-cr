@@ -1382,6 +1382,7 @@ void InitDbus()
 
     CCSP_Base_Func_CB               cb;
     char                            CrName[256];
+    ANSC_STATUS                     returnStatus       = ANSC_STATUS_SUCCESS;
 
     pComponentName = g_pCcspCrMgr->pCRName;
 
@@ -1396,7 +1397,12 @@ void InitDbus()
         AnscCopyString(CrName, g_pCcspCrMgr->pCRName);
     }
 
-    CCSP_Message_Bus_Init(CrName, CCSP_MSG_BUS_CFG, &g_pDbusHandle, (CCSP_MESSAGE_BUS_MALLOC)Ansc_AllocateMemory_Callback, Ansc_FreeMemory_Callback);
+    /* CID 71933 - Unchecked return value */
+    returnStatus = CCSP_Message_Bus_Init(CrName, CCSP_MSG_BUS_CFG, &g_pDbusHandle, (CCSP_MESSAGE_BUS_MALLOC)Ansc_AllocateMemory_Callback, Ansc_FreeMemory_Callback);
+    if ( returnStatus != ANSC_STATUS_SUCCESS )
+    {
+        CcspTraceInfo((" !!! CCSP Message Bus Init ERROR !!!\n"));
+    }
 
     sleep(1);
 
@@ -1414,7 +1420,12 @@ void InitDbus()
     }
     else
     {
-        CCSP_Message_Bus_Register_Path(g_pDbusHandle,CCSP_DBUS_PATH_CR, CcspCrProcessDbusRequest, g_pDbusHandle);
+        /* CID 75132 - Unchecked return value */
+        returnStatus = CCSP_Message_Bus_Register_Path(g_pDbusHandle,CCSP_DBUS_PATH_CR, CcspCrProcessDbusRequest, g_pDbusHandle);
+	if ( returnStatus != CCSP_Message_Bus_OK )
+        {
+            CcspTraceInfo((" !!! CCSP_Message_Bus_Register_Path ERROR returnStatus: %d\n!!!\n", returnStatus));
+	}
     }
 
 

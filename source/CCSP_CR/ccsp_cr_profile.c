@@ -187,6 +187,8 @@ CcspCrLoadDeviceProfile
         AnscCloseFile(pFileHandle);
     }
 
+     /*CID 137743 - String not null terminated */
+    pXMLContent[uBufferSize] = '\0';
     /* parse the XML content */
     pBackContent = pXMLContent;
 
