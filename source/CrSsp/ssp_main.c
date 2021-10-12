@@ -430,19 +430,22 @@ static void sig_handler(int sig)
 #endif
 
 static void drop_root()
-{
-  char buf[8] = {'\0'};  
+{ 
   appcaps.caps = NULL;
   appcaps.user_name = NULL;
-
-  syscfg_get( NULL, "NonRootSupport", buf, sizeof(buf));
-  if( buf != NULL )  { 
-      if (strncmp(buf, "true", strlen("true")) == 0) {
-          init_capability();
-          drop_root_caps(&appcaps);
-          update_process_caps(&appcaps);
-          read_capability(&appcaps);
-      } 
+  bool ret = false;
+  ret = isBlocklisted();
+  if(ret)
+  {
+    AnscTrace("NonRoot feature is disabled\n");
+  }
+  else
+  {
+    AnscTrace("NonRoot feature is enabled, dropping root privileges for CcspCr process\n");
+    init_capability();
+    drop_root_caps(&appcaps);
+    update_process_caps(&appcaps);
+    read_capability(&appcaps);
   }
 }
 
