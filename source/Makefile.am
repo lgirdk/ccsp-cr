@@ -32,6 +32,7 @@ CcspCrSsp_LDFLAGS = -lpthread
 if RBUS_BUILD_ONLY
 CcspCrSsp_CFLAGS += -DRBUS_MAIN_ENABLED
 CcspCrSsp_SOURCES = CrSsp/ssp_rbus.c
+CcspCrSsp_LDFLAGS += -lrbus -lrbus-core -lrtMessage -lxml2
 else
 CcspCrSsp_SOURCES = \
 	CrSsp/ssp_cmd.c \
@@ -46,6 +47,7 @@ CcspCrSsp_SOURCES = \
 CcspCrSsp_LDFLAGS += -lccsp_common -lsyscfg -ltelemetry_msgsender -lprivilege $(SYSTEMD_LDFLAGS) -lpthread
 if RBUS_BUILD_INTEGRATED
 CcspCrSsp_SOURCES += CrSsp/ssp_rbus.c
+CcspCrSsp_LDFLAGS += -lrbus -lrbus-core -lrtMessage -lxml2
 endif
 endif
 
