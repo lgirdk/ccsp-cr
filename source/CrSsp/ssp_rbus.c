@@ -17,8 +17,8 @@
  * limitations under the License.
 */
 
-#include <rbus.h>
-#include <rtVector.h>
+#include <rbus/rbus.h>
+#include <rtmessage/rtVector.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -26,7 +26,7 @@
 #include <pthread.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
-#include <rtLog.h>
+#include <rtmessage/rtLog.h>
 
 #ifndef DISABLE_RDK_LOGGER
 #include "rdk_debug.h"
