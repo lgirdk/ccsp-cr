@@ -17,7 +17,7 @@
  * limitations under the License.
 */
 
-#include <rbus.h>
+#include <rbus/rbus.h>
 #include <rtVector.h>
 #include <unistd.h>
 #include <stdlib.h>
