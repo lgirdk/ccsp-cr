@@ -403,10 +403,10 @@ void GenerateDataModelXml()
     InitDMTreeRoot(&multiTree);
     g_pCcspCrMgr->GetRegisteredComponents(g_pCcspCrMgr, (PVOID**)&ppComponentArray, &ulArraySize);
 
-    AnscTrace("The count of Registered component: %d\n", ulArraySize);
+    AnscTrace("The count of Registered component: %lu\n", ulArraySize);
     for( i = 0 ; i < ulArraySize; i ++)
     {
-        AnscTrace("#%.2d  %s -- %s\n", (i+1), ppComponentArray[i]->componentName, ppComponentArray[i]->dbusPath);
+        AnscTrace("#%.2lu  %s -- %s\n", (i+1), ppComponentArray[i]->componentName, ppComponentArray[i]->dbusPath);
 
         ulSize = 0;
         g_pCcspCrMgr->GetNamespaceByComponent(g_pCcspCrMgr, (const char*)ppComponentArray[i]->componentName, (PVOID**)&ppStringArray, &ulSize);

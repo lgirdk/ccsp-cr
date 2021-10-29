@@ -155,7 +155,7 @@ CcspCrRequestSessionID
     }
 
 #ifdef   _DEBUG
-    AnscTrace("CcspCrRequestSessionID - priority %u, session id = %u.\n", uPriority, pThisObject->uSessionID);
+    AnscTrace("CcspCrRequestSessionID - priority %lu, session id = %lu.\n", uPriority, pThisObject->uSessionID);
 #endif
 
     return CCSP_SUCCESS;
@@ -226,7 +226,7 @@ CcspCrGetCurrentSessionID
     }
 
 #ifdef   _DEBUG
-    AnscTrace("CcspCrGetCurrentSessionID - current session id = %u.\n", pThisObject->uSessionID);
+    AnscTrace("CcspCrGetCurrentSessionID - current session id = %lu.\n", pThisObject->uSessionID);
 #endif
 
     return CCSP_SUCCESS;
@@ -286,7 +286,7 @@ CcspCrInformEndOfSession
     }
 
 #ifdef   _DEBUG
-    AnscTrace("CcspCrInformEndOfSession - session id = %u.\n", ulSessionID);
+    AnscTrace("CcspCrInformEndOfSession - session id = %lu.\n", ulSessionID);
 #endif
 
     return CCSP_SUCCESS;

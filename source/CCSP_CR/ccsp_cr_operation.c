@@ -180,7 +180,7 @@ CcspCrRegisterCapabilities
     }
     else if( pCompInfo->uVersion != compVersion)
     {
-        AnscTraceWarning(("Mismatched Version of component '%s'. Expect version %d not %d. \n", pCompName, pCompInfo->uVersion, compVersion));
+        AnscTraceWarning(("Mismatched Version of component '%s'. Expect version %lu not %lu. \n", pCompName, pCompInfo->uVersion, compVersion));
 
         return CCSP_CR_ERR_UNKNOWN_COMPONENT;
     }
@@ -222,7 +222,7 @@ CcspCrRegisterCapabilities
                 pCompInfo       = ACCESS_CCSP_COMPONENT_INFO(pSLinkEntry);
                 pSLinkEntry     = AnscQueueGetNextEntry(pSLinkEntry);
 
-            	AnscTraceWarning(("CcspCrRegisterCapabilities - print component %s with status %d\n",
+                AnscTraceWarning(("CcspCrRegisterCapabilities - print component %s with status %lu\n",
             			pCompInfo->pComponentName, pCompInfo->uStatus));
             }
 
@@ -233,7 +233,7 @@ CcspCrRegisterCapabilities
                 pCompInfo       = ACCESS_CCSP_COMPONENT_INFO(pSLinkEntry);
                 pSLinkEntry     = AnscQueueGetNextEntry(pSLinkEntry);
 
-            	AnscTraceWarning(("CcspCrRegisterCapabilities - component %s status %d\n",
+                AnscTraceWarning(("CcspCrRegisterCapabilities - component %s status %lu\n",
             			pCompInfo->pComponentName, pCompInfo->uStatus));
 
                 if( pCompInfo->uStatus != CCSP_Component_RegSuccessful)

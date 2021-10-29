@@ -319,7 +319,7 @@ CcspCrCloneString
 
     if( ulSize == 16 || ulSize == 13)
     {
-        AnscTrace("CcspCrCloneString with ulSize == %d, '%s'\n", ulSize, pString);
+        AnscTrace("CcspCrCloneString with ulSize == %lu, '%s'\n", ulSize, pString);
     }
 
     pNewString = (char*)CcspCrAllocateMemory(ulSize);

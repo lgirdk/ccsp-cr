@@ -1269,7 +1269,7 @@ waitingForSystemReadyTask(ANSC_HANDLE  hThisObject)
             {
                 if( pCompInfo->uStatus == CCSP_Component_NotRegistered)
                 {
-		    AnscTrace("System Not Ready!!!! '%s' v%d NotRegistered\n",
+		    AnscTrace("System Not Ready!!!! '%s' v%lu NotRegistered\n",
 			     pCompInfo->pComponentName, pCompInfo->uVersion);
 		    if (strstr(pCompInfo->pComponentName, "ccsp.cm"))
 		    {
@@ -1287,7 +1287,7 @@ waitingForSystemReadyTask(ANSC_HANDLE  hThisObject)
                 }
                 else if( pCompInfo->uStatus != CCSP_Component_RegSuccessful)
                 {
-                    AnscTrace("System Not Ready!!!! '%s' v%d RegisterFailed\n", pCompInfo->pComponentName, pCompInfo->uVersion);
+                    AnscTrace("System Not Ready!!!! '%s' v%lu RegisterFailed\n", pCompInfo->pComponentName, pCompInfo->uVersion);
                     break;
                 }
             }
@@ -1334,7 +1334,7 @@ void CcspCrProcessRegisterCap(char* pCompName, void* user_data)
             pCompInfo       = ACCESS_CCSP_COMPONENT_INFO(pSLinkEntry);
             pSLinkEntry     = AnscQueueGetNextEntry(pSLinkEntry);
 
-            AnscTraceWarning(("CcspCrRegisterCapabilities - print component %s with status %d\n",
+            AnscTraceWarning(("CcspCrRegisterCapabilities - print component %s with status %lu\n",
                     pCompInfo->pComponentName, pCompInfo->uStatus));
         }
 
@@ -1345,7 +1345,7 @@ void CcspCrProcessRegisterCap(char* pCompName, void* user_data)
             pCompInfo       = ACCESS_CCSP_COMPONENT_INFO(pSLinkEntry);
             pSLinkEntry     = AnscQueueGetNextEntry(pSLinkEntry);
 
-            AnscTraceWarning(("CcspCrRegisterCapabilities - component %s status %d\n",
+            AnscTraceWarning(("CcspCrRegisterCapabilities - component %s status %lu\n",
                     pCompInfo->pComponentName, pCompInfo->uStatus));
 
             if( pCompInfo->uStatus != CCSP_Component_RegSuccessful)
@@ -1424,7 +1424,7 @@ void InitDbus()
         returnStatus = CCSP_Message_Bus_Register_Path(g_pDbusHandle,CCSP_DBUS_PATH_CR, CcspCrProcessDbusRequest, g_pDbusHandle);
 	if ( returnStatus != CCSP_Message_Bus_OK )
         {
-            CcspTraceInfo((" !!! CCSP_Message_Bus_Register_Path ERROR returnStatus: %d\n!!!\n", returnStatus));
+            CcspTraceInfo((" !!! CCSP_Message_Bus_Register_Path ERROR returnStatus: %lu\n!!!\n", returnStatus));
 	}
     }
 

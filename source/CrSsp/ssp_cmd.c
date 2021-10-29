@@ -95,38 +95,38 @@ void CRSessionTest()
     int                 iStatus  = 0;
 
     g_pCcspCrMgr->GetCurrentSessionID(g_pCcspCrMgr, &uPriority,&uSession);
-    AnscTrace("Current CR Session id= %d and Priority = %d\n", uSession, uPriority);
+    AnscTrace("Current CR Session id= %lu and Priority = %lu\n", uSession, uPriority);
 
     AnscTrace("Try to request a session ID with Priority 5...\n");
     iStatus = g_pCcspCrMgr->RequestSessionID(g_pCcspCrMgr, 5, &uSession);
     AnscTrace("The status = %i ", iStatus);
     PrintoutStatus(iStatus, FALSE);
-    AnscTrace(" and Session ID = %d\n", uSession);
+    AnscTrace(" and Session ID = %lu\n", uSession);
 
     g_pCcspCrMgr->GetCurrentSessionID(g_pCcspCrMgr, &uPriority,&uSession);
-    AnscTrace("Current CR Session id= %d and Priority = %d\n", uSession, uPriority);
+    AnscTrace("Current CR Session id= %lu and Priority = %lu\n", uSession, uPriority);
 
     AnscTrace("Try to request a session ID with Priority 3...\n");
     iStatus = g_pCcspCrMgr->RequestSessionID(g_pCcspCrMgr, 3, &uSession);
     AnscTrace("The status = %i ", iStatus);
     PrintoutStatus(iStatus, FALSE);
-    AnscTrace(" and Session ID = %d\n", uSession);
+    AnscTrace(" and Session ID = %lu\n", uSession);
     g_pCcspCrMgr->GetCurrentSessionID(g_pCcspCrMgr, &uPriority,&uSession);
-    AnscTrace("Current CR Session id= %d and Priority = %d\n", uSession, uPriority);
+    AnscTrace("Current CR Session id= %lu and Priority = %lu\n", uSession, uPriority);
 
     AnscTrace("Try to request a session ID with Priority 8...\n");
     iStatus = g_pCcspCrMgr->RequestSessionID(g_pCcspCrMgr, 8, &uSession);
     AnscTrace("The status = %i ", iStatus);
     PrintoutStatus(iStatus, FALSE);
-    AnscTrace(" and Session ID = %d\n", uSession);
+    AnscTrace(" and Session ID = %lu\n", uSession);
 
     g_pCcspCrMgr->GetCurrentSessionID(g_pCcspCrMgr, &uPriority,&uSession);
-    AnscTrace("Current CR Session id= %d and Priority = %d\n", uSession, uPriority);
+    AnscTrace("Current CR Session id= %lu and Priority = %lu\n", uSession, uPriority);
 
     AnscTrace("Release the session.\n");
     g_pCcspCrMgr->InformEndOfSession(g_pCcspCrMgr, uSession);
     g_pCcspCrMgr->GetCurrentSessionID(g_pCcspCrMgr, &uPriority,&uSession);
-    AnscTrace("Current CR Session id= %d and Priority = %d\n", uSession, uPriority);
+    AnscTrace("Current CR Session id= %lu and Priority = %lu\n", uSession, uPriority);
 }
 
 void CRFreeComponent(name_spaceType_t***   component, ULONG  count)
@@ -429,7 +429,7 @@ void CRDiscoverTest()
          {
              for( i = 0; i < ulSize; i ++)
              {
-                AnscTrace("#%.2d D-Bus Path: %s\n", (i + 1), ppDbuspath[i]->dbusPath);
+                AnscTrace("#%.2lu D-Bus Path: %s\n", (i + 1), ppDbuspath[i]->dbusPath);
 
                 CcspCrFreeMemory(ppDbuspath[i]->componentName);
                 CcspCrFreeMemory(ppDbuspath[i]->dbusPath);
@@ -458,7 +458,7 @@ void CRDiscoverTest()
          {
              for( i = 0; i < ulSize; i ++)
              {
-                AnscTrace("#%.2d D-Bus Path: %s\n", (i + 1), ppDbuspath[i]->dbusPath);
+                AnscTrace("#%.2lu D-Bus Path: %s\n", (i + 1), ppDbuspath[i]->dbusPath);
 
                 CcspCrFreeMemory(ppDbuspath[i]->componentName);
                 CcspCrFreeMemory(ppDbuspath[i]->dbusPath);
@@ -487,7 +487,7 @@ void CRDiscoverTest()
          {
              for( i = 0; i < ulSize; i ++)
              {
-                AnscTrace("#%.2d D-Bus Path: %s\n", (i + 1), ppDbuspath[i]->dbusPath);
+                AnscTrace("#%.2lu D-Bus Path: %s\n", (i + 1), ppDbuspath[i]->dbusPath);
 
                 CcspCrFreeMemory(ppDbuspath[i]->componentName);
                 CcspCrFreeMemory(ppDbuspath[i]->dbusPath);
@@ -516,7 +516,7 @@ void CRDiscoverTest()
          {
              for( i = 0; i < ulSize; i ++)
              {
-                AnscTrace("#%.2d D-Bus Path: %s\n", (i + 1), ppDbuspath[i]->dbusPath);
+                AnscTrace("#%.2lu D-Bus Path: %s\n", (i + 1), ppDbuspath[i]->dbusPath);
 
                 CcspCrFreeMemory(ppDbuspath[i]->componentName);
                 CcspCrFreeMemory(ppDbuspath[i]->dbusPath);
@@ -545,7 +545,7 @@ void CRDiscoverTest()
          {
              for( i = 0; i < ulSize; i ++)
              {
-                AnscTrace("#%.2d D-Bus Path: %s\n", (i + 1), ppDbuspath[i]->dbusPath);
+                AnscTrace("#%.2lu D-Bus Path: %s\n", (i + 1), ppDbuspath[i]->dbusPath);
 
                 CcspCrFreeMemory(ppDbuspath[i]->componentName);
                 CcspCrFreeMemory(ppDbuspath[i]->dbusPath);
@@ -574,7 +574,7 @@ void CRDiscoverTest()
          {
              for( i = 0; i < ulSize; i ++)
              {
-                AnscTrace("#%.2d D-Bus Path: %s\n", (i + 1), ppDbuspath[i]->dbusPath);
+                AnscTrace("#%.2lu D-Bus Path: %s\n", (i + 1), ppDbuspath[i]->dbusPath);
 
                 CcspCrFreeMemory(ppDbuspath[i]->componentName);
                 CcspCrFreeMemory(ppDbuspath[i]->dbusPath);
@@ -603,7 +603,7 @@ void CRDiscoverTest()
          {
              for( i = 0; i < ulSize; i ++)
              {
-                AnscTrace("#%.2d D-Bus Path: %s\n", (i + 1), ppDbuspath[i]->dbusPath);
+                AnscTrace("#%.2lu D-Bus Path: %s\n", (i + 1), ppDbuspath[i]->dbusPath);
 
                 CcspCrFreeMemory(ppDbuspath[i]->componentName);
                 CcspCrFreeMemory(ppDbuspath[i]->dbusPath);
@@ -646,7 +646,7 @@ void CRDiscoverTest()
              {
                  for( i = 0; i < ulSize; i ++)
                  {
-                    AnscTrace("#%.2d D-Bus Path: %s\n", (i + 1), ppDbuspath[i]->dbusPath);
+                    AnscTrace("#%.2lu D-Bus Path: %s\n", (i + 1), ppDbuspath[i]->dbusPath);
 
                     CcspCrFreeMemory(ppDbuspath[i]->componentName);
                     CcspCrFreeMemory(ppDbuspath[i]->dbusPath);
@@ -691,7 +691,7 @@ void CRDiscoverTest()
              {
                  for( i = 0; i < ulSize; i ++)
                  {
-                    AnscTrace("#%.2d D-Bus Path: %s\n", (i + 1), ppDbuspath[i]->dbusPath);
+                    AnscTrace("#%.2lu D-Bus Path: %s\n", (i + 1), ppDbuspath[i]->dbusPath);
 
                     CcspCrFreeMemory(ppDbuspath[i]->componentName);
                     CcspCrFreeMemory(ppDbuspath[i]->dbusPath);
@@ -785,10 +785,10 @@ void CRComponentTest()
 
     g_pCcspCrMgr->GetRegisteredComponents(g_pCcspCrMgr, (PVOID**)&ppComponentArray, &ulArraySize);
 
-    AnscTrace("The count of Registered component: %d\n", ulArraySize);
+    AnscTrace("The count of Registered component: %lu\n", ulArraySize);
     for( i = 0 ; i < ulArraySize; i ++)
     {
-        AnscTrace("#%.2d  %s -- %s\n", (i+1), ppComponentArray[i]->componentName, ppComponentArray[i]->dbusPath);
+        AnscTrace("#%.2lu  %s -- %s\n", (i+1), ppComponentArray[i]->componentName, ppComponentArray[i]->dbusPath);
 
         ulSize = 0;
         g_pCcspCrMgr->GetNamespaceByComponent(g_pCcspCrMgr, (const char*)ppComponentArray[i]->componentName, (PVOID**)&ppStringArray, &ulSize);
@@ -803,7 +803,7 @@ void CRComponentTest()
             {
                 if( ppStringArray[j] != NULL)
                 {
-                    AnscTrace(" @%.3d  %s %d\n", (j+1), ppStringArray[j]->name_space, ppStringArray[j]->dataType);
+                    AnscTrace(" @%.3lu  %s %d\n", (j+1), ppStringArray[j]->name_space, ppStringArray[j]->dataType);
 
                     CcspNsMgrFreeMemory(g_pCcspCrMgr->pDeviceName, ppStringArray[j]->name_space);
                     CcspNsMgrFreeMemory(g_pCcspCrMgr->pDeviceName, ppStringArray[j]);

@@ -377,7 +377,7 @@ CcspCrDumpObject
 
     if( pNSMgr != NULL)
     {
-        AnscTrace("Total Namespace Registered:  %d\n", pNSMgr->GetCountOfRegNamespace(pNSMgr));
+        AnscTrace("Total Namespace Registered:  %lu\n", pNSMgr->GetCountOfRegNamespace(pNSMgr));
     }
 
     pSLinkEntry = AnscQueueGetFirstEntry(&pMyObject->CompInfoQueue);
@@ -398,7 +398,7 @@ CcspCrDumpObject
 
             if( pCompInfo->uStatus == CCSP_Component_NotRegistered)
             {
-		AnscTrace("#%.2d %s v%d NotRegistered\n", i,
+		AnscTrace("#%.2lu %s v%lu NotRegistered\n", i,
 			  pCompInfo->pComponentName, pCompInfo->uVersion);
 		if (strstr(pCompInfo->pComponentName, "ccsp.tr069pa"))
 		{
@@ -407,11 +407,11 @@ CcspCrDumpObject
             }
             else if( pCompInfo->uStatus == CCSP_Component_RegSuccessful)
             {
-                AnscTrace("#%.2d %s v%d RegSucceeded\n", i, pCompInfo->pComponentName, pCompInfo->uVersion);
+                AnscTrace("#%.2lu %s v%lu RegSucceeded\n", i, pCompInfo->pComponentName, pCompInfo->uVersion);
             }
             else
             {
-                AnscTrace("#%.2d %s v%d RegFailed\n", i, pCompInfo->pComponentName, pCompInfo->uVersion);
+                AnscTrace("#%.2lu %s v%lu RegFailed\n", i, pCompInfo->pComponentName, pCompInfo->uVersion);
             }
         }
     }
