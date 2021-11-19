@@ -1142,7 +1142,7 @@ CcspCrProcessDbusRequest
         dbus_int32_t tmp = 0;
         dbus_int32_t result = 0;
         int sessionID = 0;
-        int priority;
+        int priority = 0;
 
         dbus_message_iter_init (message, &iter);
         if(dbus_message_iter_get_arg_type (&iter) == DBUS_TYPE_INT32)
@@ -1455,7 +1455,9 @@ void InitDbus()
     /* Listen to certain events */
     if (!(CCSP_Msg_IsRbus_enabled())) /* NameOwnerChanged is only required for Dbus and not for rbus*/
     {
-        CcspBaseIf_Register_Event(g_pDbusHandle, 0, "NameOwnerChanged");
+        returnStatus = CcspBaseIf_Register_Event(g_pDbusHandle, 0, "NameOwnerChanged");
+	if( returnStatus != CCSP_Message_Bus_OK )
+             CcspTraceError((" !!! CcspBaseIf_Register_Event: NameOwnerChanged ERROR returnStatus: %lu!!!\n", returnStatus));
     }
 
     if(g_iTraceLevel >= CCSP_TRACE_LEVEL_EMERGENCY)
