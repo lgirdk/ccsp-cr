@@ -449,25 +449,6 @@ static void drop_root()
   }
 }
 
-static void* waitforsyscfgReady(void *arg)
-{
-  UNREFERENCED_PARAMETER(arg);
-  #define TIME_INTERVAL 2000
-  #define MAX_WAIT_TIME 90
-  int times = 0;
-  pthread_detach(pthread_self());
-  while(times++ < MAX_WAIT_TIME)    {
-        if ( 0 != syscfg_init( ) )    {
-             CCSP_Msg_SleepInMilliSeconds(TIME_INTERVAL);
-        }
-        else {
-             g_dropStatus = true;
-             break;
-        }
-  }
-  pthread_exit(NULL);
-}
-
 int main(int argc, char* argv[])
 {
     int cmdChar = 0;
@@ -663,10 +644,8 @@ int main(int argc, char* argv[])
 
     system("touch /tmp/cr_initialized; print_uptime boot_to_cr_uptime");
 
-    pthread_t EvtThreadId;
-    pthread_create(&EvtThreadId, NULL, &waitforsyscfgReady, NULL);
-
-
+    g_dropStatus = true;
+    
     if ( bRunAsDaemon )
     {
 		sem_post (sem);
