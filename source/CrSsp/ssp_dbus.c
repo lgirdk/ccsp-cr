@@ -405,10 +405,10 @@ discComponentSupportingNamespace
     const char*          name_space,
     const char*          subsystem_prefix,
     componentStruct_t*** components,
-    int                  *val_size
+    ULONG                *val_size
 )
 {
-    return g_pCcspCrMgr->DiscoverComponentSupportingNamespace(g_pCcspCrMgr, name_space, subsystem_prefix, FALSE, (PVOID**)components, (ULONG*)val_size);
+    return g_pCcspCrMgr->DiscoverComponentSupportingNamespace(g_pCcspCrMgr, name_space, subsystem_prefix, FALSE, (PVOID**)components, val_size);
 }
 
 int 
@@ -759,7 +759,7 @@ CcspCrProcessDbusRequest
         dbus_int32_t tmp = 0;
         dbus_int32_t result = 0;
         componentStruct_t **components =0;
-        int size  = 0;
+        ULONG size  = 0;
         char *name_space = 0;
         char *subsystem_prefix = 0;
 
@@ -789,7 +789,7 @@ CcspCrProcessDbusRequest
         if(result == CCSP_SUCCESS)
         {
 
-            int i;
+            ULONG i;
             for(i = 0; i < size; i++)
             {
                 dbus_message_iter_open_container (&array_iter,
