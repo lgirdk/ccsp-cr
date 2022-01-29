@@ -40,10 +40,8 @@
 #endif
 #endif
 
-#ifdef _ANSC_LINUX
 #include <sys/types.h>
 #include <sys/ipc.h>
-#endif
 
 #include "ssp_global.h"
 #include "ccsp_custom.h"
@@ -1378,7 +1376,6 @@ int ccspCrSystemReady ()
 
 void InitDbus()
 {
-#ifndef WIN32
 
     CCSP_Base_Func_CB               cb;
     char                            CrName[256];
@@ -1509,14 +1506,11 @@ void InitDbus()
             "waitingForSystemReadyTask"
         );
 
-#endif
 }
 
 void ExitDbus()
 {
-#ifndef WIN32
     CCSP_Message_Bus_Exit(g_pDbusHandle);
-#endif
 }
 
 
