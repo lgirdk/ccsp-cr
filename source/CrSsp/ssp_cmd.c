@@ -33,6 +33,8 @@
    limitations under the License.
 **********************************************************************/
 
+#include <stdio.h>
+#include <string.h>
 
 #ifdef __GNUC__
 #if (!defined _BUILD_ANDROID) && (!defined _NO_EXECINFO_H_)
@@ -177,11 +179,11 @@ void CRRegisterTest()
 
         if( i < uCount - 1)
         {
-            _ansc_sprintf(buffer, "Device.DevInfo.param%lu", i + 1);
+            sprintf(buffer, "Device.DevInfo.param%lu", i + 1);
         }
         else
         {
-            _ansc_sprintf(buffer, "Device.DevInfo.object%lu.", i + 1);
+            sprintf(buffer, "Device.DevInfo.object%lu.", i + 1);
         }
 
         ppSpaceType[i]->name_space = CcspCrCloneString(buffer);
@@ -236,11 +238,11 @@ void CRRegisterTest()
 
         if( i < uCount/2)
         {
-            _ansc_sprintf(buffer, "Device.DevInfo.DevXXX.param%lu", i + 1);
+            sprintf(buffer, "Device.DevInfo.DevXXX.param%lu", i + 1);
         }
         else
         {
-            _ansc_sprintf(buffer, "Device.DevInfo.DevXXX.DevYYY.param%lu", i + 1);
+            sprintf(buffer, "Device.DevInfo.DevXXX.DevYYY.param%lu", i + 1);
         }
 
         ppSpaceType[i]->name_space = CcspCrCloneString(buffer);
@@ -275,13 +277,13 @@ void CRRegisterTest()
 
         if( i == 0)
         {
-            _ansc_sprintf(buffer, "Device.DevInfo.DevXXX.DevTableNumberOfEntries");
+            sprintf(buffer, "Device.DevInfo.DevXXX.DevTableNumberOfEntries");
             ppSpaceType[i]->dataType   = ccsp_unsignedLong;
             ppSpaceType[i]->name_space = CcspCrCloneString(buffer);
         }
         else
         {
-            _ansc_sprintf(buffer, "Device.DevInfo.DevXXX.DevTable.{i}.param%lu", i + 1);
+            sprintf(buffer, "Device.DevInfo.DevXXX.DevTable.{i}.param%lu", i + 1);
             ppSpaceType[i]->name_space = CcspCrCloneString(buffer);
             ppSpaceType[i]->dataType   = rand() % 9;
         }
@@ -758,7 +760,7 @@ void CRUnregisterTest()
            return;
         }
 
-        _ansc_sprintf(buffer, "Device.DevInfo.param%lu", i + 1);
+        sprintf(buffer, "Device.DevInfo.param%lu", i + 1);
 
         ppSpaceType[i]->name_space = CcspCrCloneString(buffer);
         ppSpaceType[i]->dataType   = rand() % 9;
