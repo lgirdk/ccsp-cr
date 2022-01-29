@@ -40,10 +40,8 @@
 #endif
 #endif
 
-#ifdef _ANSC_LINUX
 #include <sys/types.h>
 #include <sys/ipc.h>
-#endif
 
 #include "ssp_global.h"
 
@@ -823,7 +821,6 @@ void CRComponentTest()
 
 }
 
-#ifndef WIN32
 void
 AnscTraceMemoryUsage
     (
@@ -831,7 +828,6 @@ AnscTraceMemoryUsage
     )
 {
 }
-#endif
 
 void CRBatchTest()
 {
