@@ -40,12 +40,10 @@
 #endif
 #endif
 
-#ifdef _ANSC_LINUX
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <semaphore.h>
 #include <fcntl.h>
-#endif
 
 #include "ssp_global.h"
 #include "syscfg/syscfg.h"
@@ -66,11 +64,7 @@ void*                                       g_pDbusHandle           = NULL;
 ULONG                                       g_ulAllocatedSizeInit   = 0;
 char                                        g_Subsystem[32]         = {0};
 
-#ifndef WIN32
 extern ULONG                                g_ulAllocatedSizeCurr;
-#else
-ULONG                                       g_ulAllocatedSizeCurr = 0;
-#endif
 
 extern char*                                pComponentName;
 
@@ -476,9 +470,7 @@ int main(int argc, char* argv[])
     char cmd[1024] = {0};
     FILE *fd = NULL;
     int rc;
-#ifdef _ANSC_LINUX
     sem_t *sem = NULL;
-#endif
 
     pComponentName = CCSP_DBUS_INTERFACE_CR;
 #ifdef FEATURE_SUPPORT_RDKLOG
@@ -507,49 +499,6 @@ int main(int argc, char* argv[])
         }
     }
 
-#if  defined(_ANSC_WINDOWSNT)
-
-    AnscStartupSocketWrapper(NULL);
-
-    gather_info();
-
-    cmd_dispatch('e');
-
-
-    while ( cmdChar != 'q' )
-    {
-        AnscTrace("\n=============================================\nCCSP CR Menu:\n");
-
-	    AnscTrace("'e'     --------  \"Engage the program\"\n");
-	    AnscTrace("'c'     --------  \"Cancel the program\"\n");
-	    AnscTrace("'m'     --------  \"Memory Check\"\n");
-	    AnscTrace("'t'     --------  \"Memory Trace\"\n");
-	    AnscTrace("'d'     --------  \"Dump CR information\"\n");
-	    AnscTrace("'r'     --------  \"Register Namespace\"\n");
-	    AnscTrace("'u'     --------  \"Unregister Namespace\"\n");
-	    AnscTrace("'v'     --------  \"Discover Namespace\"\n");
-	    AnscTrace("'y'     --------  \"Get Component Array\"\n");
-	    AnscTrace("'k'     --------  \"Check Namespace DataType\"\n");
-	    AnscTrace("'s'     --------  \"Session control test\"\n");
-	    AnscTrace("'b'     --------  \"Batch Test\"\n");
-	    AnscTrace("'0'     --------  \"Send systemReadySignal\"\n");
-	    AnscTrace("'1'     --------  \"GetParameterNames from 'Device.'\"\n");
-	    AnscTrace("'2'     --------  \"GetParmaeterNames from 'com.cisco.'\"\n");
-	    AnscTrace("'3'     --------  \"GetParameterValues from 'Device.'\"\n");
-	    AnscTrace("'4'     --------  \"GetParmaeterValues from 'com.cisco.'\"\n");
-	    AnscTrace("'5'     --------  \"GetParameterNames (all)\"\n");
-	    AnscTrace("'6'     --------  \"GetParmaeterValues (all)\"\n");
-	    AnscTrace("'q'     --------  \"Quit\"\n");
-	    AnscTrace("=============================================\n\n");
-
-        cmdChar = getchar();
-        fflush(stdin);
-
-        cmd_dispatch(cmdChar);
-    }
-
-
-#elif defined(_ANSC_LINUX)
 /*demonizing*/
     if ( bRunAsDaemon )
     {
@@ -686,7 +635,6 @@ int main(int argc, char* argv[])
             }
 		}
     }
-#endif
 
     if(CCSP_Msg_IsRbus_enabled())
     {

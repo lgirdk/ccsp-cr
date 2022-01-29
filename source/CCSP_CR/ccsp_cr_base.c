@@ -84,9 +84,7 @@
 
 #include "ccsp_namespace_mgr.h"
 
-#ifndef WIN32
 #include "ccsp_trace.h"
-#endif
 
 /**********************************************************************
 

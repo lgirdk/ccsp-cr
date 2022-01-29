@@ -74,9 +74,7 @@
 #include "ccsp_base_api.h"
 #include "ccsp_namespace_mgr.h"
 
-#ifndef WIN32
 #include "ccsp_trace.h"
-#endif
 
 /*
  *  Define custom trace module ID

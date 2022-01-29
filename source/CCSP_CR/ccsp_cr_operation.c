@@ -472,7 +472,6 @@ CcspCrDiscoverComponentSupportingNamespace
 
         if( remoteCR != NULL)
         {
-#ifndef WIN32
 
             iStatus = 
                 CcspBaseIf_discComponentSupportingNamespace 
@@ -486,7 +485,6 @@ CcspCrDiscoverComponentSupportingNamespace
                 );
 
             *ppComponent = (PVOID*)ppCompStruct;
-#endif
 
         }
     }
