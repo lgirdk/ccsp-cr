@@ -631,7 +631,6 @@ CcspCrProcessDbusRequest
                 return DBUS_HANDLER_RESULT_HANDLED;
             }
 
-            memset(val, 0, sizeof(name_spaceType_t *) * param_size);
         }
 
         for(i = 0; i < param_size; i++)
@@ -642,8 +641,6 @@ CcspCrProcessDbusRequest
 
             if( val[i] != NULL)
             {
-                memset(val[i], 0, sizeof(name_spaceType_t));
-
                 if(dbus_message_iter_get_arg_type (&struct_iter) == DBUS_TYPE_STRING)
                 {
                     dbus_message_iter_get_basic (&struct_iter, &val[i]->name_space);
