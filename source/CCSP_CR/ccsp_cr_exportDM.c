@@ -200,7 +200,6 @@ static void AddChildNode(TREE_NODE *parentNode, STR_LIST *pStrHead)//, unsigned 
         pNewNode = (TREE_NODE *)AnscAllocateMemory(sizeof(TREE_NODE));
         g_NodeCount++;
 
-        memset(pNewNode, 0, sizeof(TREE_NODE));        
         strcpy(pNewNode->str, pTmpNode->str);            
         pNewNode->type = pTmpNode->type;
         pNewNode->parent = pCurPosNode;
@@ -381,7 +380,6 @@ static void InitDMTreeRoot(TREE_NODE **multiTree)
     TREE_NODE *pNode;
     pNode = (TREE_NODE *)AnscAllocateMemory(sizeof(TREE_NODE));
     g_NodeCount++;
-    memset(pNode, 0, sizeof(TREE_NODE));
     strcpy(pNode->str, "Device");
     pNode->type = CCSP_OBJECT;
     pNode->flag = false;
