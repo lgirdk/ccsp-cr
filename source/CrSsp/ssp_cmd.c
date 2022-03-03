@@ -141,12 +141,12 @@ void CRFreeComponent(name_spaceType_t***   component, ULONG  count)
           if (ppSpaceType[i])
           {
              if (ppSpaceType[i]->name_space)
-                CcspCrFreeMemory((char*)ppSpaceType[i]->name_space);
+                AnscFreeMemory((char*)ppSpaceType[i]->name_space);
 
-             CcspCrFreeMemory(ppSpaceType[i]);
+             AnscFreeMemory(ppSpaceType[i]);
           }
        }
-       CcspCrFreeMemory(ppSpaceType);
+       AnscFreeMemory(ppSpaceType);
     }
 }
 
@@ -158,7 +158,7 @@ void CRRegisterTest()
      char                         buffer[256]       = { 0 };
      int                          iStatus           = 0;
 
-     ppSpaceType       = (name_spaceType_t**)CcspCrAllocateMemory( uCount * sizeof(name_spaceType_t*));
+     ppSpaceType       = (name_spaceType_t**)AnscAllocateMemory( uCount * sizeof(name_spaceType_t*));
 
      if (!ppSpaceType)
      {
@@ -167,7 +167,7 @@ void CRRegisterTest()
      }
      for( i = 0; i < uCount; i ++)
      {
-        ppSpaceType[i] = (name_spaceType_t*)CcspCrAllocateMemory(sizeof(name_spaceType_t));
+        ppSpaceType[i] = (name_spaceType_t*)AnscAllocateMemory(sizeof(name_spaceType_t));
         if (!ppSpaceType[i])
         {
            AnscTrace("Memory allocation failed");
@@ -184,7 +184,7 @@ void CRRegisterTest()
             sprintf(buffer, "Device.DevInfo.object%lu.", i + 1);
         }
 
-        ppSpaceType[i]->name_space = CcspCrCloneString(buffer);
+        ppSpaceType[i]->name_space = AnscCloneString(buffer);
         ppSpaceType[i]->dataType   = rand() % 9;
      }
 
@@ -217,7 +217,7 @@ void CRRegisterTest()
      CRFreeComponent(&ppSpaceType, uCount);
 
      /* register another component "CCSP_ObjectSample" */
-     ppSpaceType       = (name_spaceType_t**)CcspCrAllocateMemory( uCount * sizeof(name_spaceType_t*));
+     ppSpaceType       = (name_spaceType_t**)AnscAllocateMemory( uCount * sizeof(name_spaceType_t*));
 
      if (!ppSpaceType)
      {
@@ -226,7 +226,7 @@ void CRRegisterTest()
      }
      for( i = 0; i < uCount; i ++)
      {
-        ppSpaceType[i] = (name_spaceType_t*)CcspCrAllocateMemory(sizeof(name_spaceType_t));
+        ppSpaceType[i] = (name_spaceType_t*)AnscAllocateMemory(sizeof(name_spaceType_t));
         if (!ppSpaceType[i])
         {
            AnscTrace("Memory allocation failed");
@@ -243,7 +243,7 @@ void CRRegisterTest()
             sprintf(buffer, "Device.DevInfo.DevXXX.DevYYY.param%lu", i + 1);
         }
 
-        ppSpaceType[i]->name_space = CcspCrCloneString(buffer);
+        ppSpaceType[i]->name_space = AnscCloneString(buffer);
         ppSpaceType[i]->dataType   = rand() % 9;
      }
 
@@ -256,7 +256,7 @@ void CRRegisterTest()
      CRFreeComponent(&ppSpaceType, uCount);
 
      /* register another component "CCSP_TableSample" */
-     ppSpaceType       = (name_spaceType_t**)CcspCrAllocateMemory( uCount * sizeof(name_spaceType_t*));
+     ppSpaceType       = (name_spaceType_t**)AnscAllocateMemory( uCount * sizeof(name_spaceType_t*));
 
      if (!ppSpaceType)
      {
@@ -265,7 +265,7 @@ void CRRegisterTest()
      }    
      for( i = 0; i < uCount; i ++)
      {
-        ppSpaceType[i] = (name_spaceType_t*)CcspCrAllocateMemory(sizeof(name_spaceType_t));
+        ppSpaceType[i] = (name_spaceType_t*)AnscAllocateMemory(sizeof(name_spaceType_t));
         if (!ppSpaceType[i])
         {
            AnscTrace("Memory allocation failed");
@@ -277,12 +277,12 @@ void CRRegisterTest()
         {
             sprintf(buffer, "Device.DevInfo.DevXXX.DevTableNumberOfEntries");
             ppSpaceType[i]->dataType   = ccsp_unsignedLong;
-            ppSpaceType[i]->name_space = CcspCrCloneString(buffer);
+            ppSpaceType[i]->name_space = AnscCloneString(buffer);
         }
         else
         {
             sprintf(buffer, "Device.DevInfo.DevXXX.DevTable.{i}.param%lu", i + 1);
-            ppSpaceType[i]->name_space = CcspCrCloneString(buffer);
+            ppSpaceType[i]->name_space = AnscCloneString(buffer);
             ppSpaceType[i]->dataType   = rand() % 9;
         }
      }
@@ -431,12 +431,12 @@ void CRDiscoverTest()
              {
                 AnscTrace("#%.2lu D-Bus Path: %s\n", (i + 1), ppDbuspath[i]->dbusPath);
 
-                CcspCrFreeMemory(ppDbuspath[i]->componentName);
-                CcspCrFreeMemory(ppDbuspath[i]->dbusPath);
-                CcspCrFreeMemory(ppDbuspath[i]);
+                AnscFreeMemory(ppDbuspath[i]->componentName);
+                AnscFreeMemory(ppDbuspath[i]->dbusPath);
+                AnscFreeMemory(ppDbuspath[i]);
              }
         
-             CcspCrFreeMemory(ppDbuspath);
+             AnscFreeMemory(ppDbuspath);
          }
      }
 
@@ -460,12 +460,12 @@ void CRDiscoverTest()
              {
                 AnscTrace("#%.2lu D-Bus Path: %s\n", (i + 1), ppDbuspath[i]->dbusPath);
 
-                CcspCrFreeMemory(ppDbuspath[i]->componentName);
-                CcspCrFreeMemory(ppDbuspath[i]->dbusPath);
-                CcspCrFreeMemory(ppDbuspath[i]);
+                AnscFreeMemory(ppDbuspath[i]->componentName);
+                AnscFreeMemory(ppDbuspath[i]->dbusPath);
+                AnscFreeMemory(ppDbuspath[i]);
              }
         
-             CcspCrFreeMemory(ppDbuspath);
+             AnscFreeMemory(ppDbuspath);
          }
      }
 
@@ -489,12 +489,12 @@ void CRDiscoverTest()
              {
                 AnscTrace("#%.2lu D-Bus Path: %s\n", (i + 1), ppDbuspath[i]->dbusPath);
 
-                CcspCrFreeMemory(ppDbuspath[i]->componentName);
-                CcspCrFreeMemory(ppDbuspath[i]->dbusPath);
-                CcspCrFreeMemory(ppDbuspath[i]);
+                AnscFreeMemory(ppDbuspath[i]->componentName);
+                AnscFreeMemory(ppDbuspath[i]->dbusPath);
+                AnscFreeMemory(ppDbuspath[i]);
              }
         
-             CcspCrFreeMemory(ppDbuspath);
+             AnscFreeMemory(ppDbuspath);
          }
      }
 
@@ -518,12 +518,12 @@ void CRDiscoverTest()
              {
                 AnscTrace("#%.2lu D-Bus Path: %s\n", (i + 1), ppDbuspath[i]->dbusPath);
 
-                CcspCrFreeMemory(ppDbuspath[i]->componentName);
-                CcspCrFreeMemory(ppDbuspath[i]->dbusPath);
-                CcspCrFreeMemory(ppDbuspath[i]);
+                AnscFreeMemory(ppDbuspath[i]->componentName);
+                AnscFreeMemory(ppDbuspath[i]->dbusPath);
+                AnscFreeMemory(ppDbuspath[i]);
              }
         
-             CcspCrFreeMemory(ppDbuspath);
+             AnscFreeMemory(ppDbuspath);
          }
      }
 
@@ -547,12 +547,12 @@ void CRDiscoverTest()
              {
                 AnscTrace("#%.2lu D-Bus Path: %s\n", (i + 1), ppDbuspath[i]->dbusPath);
 
-                CcspCrFreeMemory(ppDbuspath[i]->componentName);
-                CcspCrFreeMemory(ppDbuspath[i]->dbusPath);
-                CcspCrFreeMemory(ppDbuspath[i]);
+                AnscFreeMemory(ppDbuspath[i]->componentName);
+                AnscFreeMemory(ppDbuspath[i]->dbusPath);
+                AnscFreeMemory(ppDbuspath[i]);
              }
         
-             CcspCrFreeMemory(ppDbuspath);
+             AnscFreeMemory(ppDbuspath);
          }
      }
 
@@ -576,12 +576,12 @@ void CRDiscoverTest()
              {
                 AnscTrace("#%.2lu D-Bus Path: %s\n", (i + 1), ppDbuspath[i]->dbusPath);
 
-                CcspCrFreeMemory(ppDbuspath[i]->componentName);
-                CcspCrFreeMemory(ppDbuspath[i]->dbusPath);
-                CcspCrFreeMemory(ppDbuspath[i]);
+                AnscFreeMemory(ppDbuspath[i]->componentName);
+                AnscFreeMemory(ppDbuspath[i]->dbusPath);
+                AnscFreeMemory(ppDbuspath[i]);
              }
         
-             CcspCrFreeMemory(ppDbuspath);
+             AnscFreeMemory(ppDbuspath);
          }
      }
 
@@ -605,12 +605,12 @@ void CRDiscoverTest()
              {
                 AnscTrace("#%.2lu D-Bus Path: %s\n", (i + 1), ppDbuspath[i]->dbusPath);
 
-                CcspCrFreeMemory(ppDbuspath[i]->componentName);
-                CcspCrFreeMemory(ppDbuspath[i]->dbusPath);
-                CcspCrFreeMemory(ppDbuspath[i]);
+                AnscFreeMemory(ppDbuspath[i]->componentName);
+                AnscFreeMemory(ppDbuspath[i]->dbusPath);
+                AnscFreeMemory(ppDbuspath[i]);
              }
         
-             CcspCrFreeMemory(ppDbuspath);
+             AnscFreeMemory(ppDbuspath);
          }
      }
 
@@ -648,12 +648,12 @@ void CRDiscoverTest()
                  {
                     AnscTrace("#%.2lu D-Bus Path: %s\n", (i + 1), ppDbuspath[i]->dbusPath);
 
-                    CcspCrFreeMemory(ppDbuspath[i]->componentName);
-                    CcspCrFreeMemory(ppDbuspath[i]->dbusPath);
-                    CcspCrFreeMemory(ppDbuspath[i]);
+                    AnscFreeMemory(ppDbuspath[i]->componentName);
+                    AnscFreeMemory(ppDbuspath[i]->dbusPath);
+                    AnscFreeMemory(ppDbuspath[i]);
                  }
         
-                 CcspCrFreeMemory(ppDbuspath);
+                 AnscFreeMemory(ppDbuspath);
              }
          }
 
@@ -693,12 +693,12 @@ void CRDiscoverTest()
                  {
                     AnscTrace("#%.2lu D-Bus Path: %s\n", (i + 1), ppDbuspath[i]->dbusPath);
 
-                    CcspCrFreeMemory(ppDbuspath[i]->componentName);
-                    CcspCrFreeMemory(ppDbuspath[i]->dbusPath);
-                    CcspCrFreeMemory(ppDbuspath[i]);
+                    AnscFreeMemory(ppDbuspath[i]->componentName);
+                    AnscFreeMemory(ppDbuspath[i]->dbusPath);
+                    AnscFreeMemory(ppDbuspath[i]);
                  }
         
-                 CcspCrFreeMemory(ppDbuspath);
+                 AnscFreeMemory(ppDbuspath);
              }
          }
 
@@ -741,7 +741,7 @@ void CRUnregisterTest()
 
 
      AnscTrace("Register back the component...\n");
-     ppSpaceType       = (name_spaceType_t**)CcspCrAllocateMemory( uCount * sizeof(name_spaceType_t*));
+     ppSpaceType       = (name_spaceType_t**)AnscAllocateMemory( uCount * sizeof(name_spaceType_t*));
 
      if (!ppSpaceType)
      {
@@ -750,7 +750,7 @@ void CRUnregisterTest()
      }
      for( i = 0; i < uCount; i ++)
      {
-        ppSpaceType[i] = (name_spaceType_t*)CcspCrAllocateMemory(sizeof(name_spaceType_t));
+        ppSpaceType[i] = (name_spaceType_t*)AnscAllocateMemory(sizeof(name_spaceType_t));
         if (!ppSpaceType[i])
         {
            AnscTrace("Memory allocation failed");
@@ -760,7 +760,7 @@ void CRUnregisterTest()
 
         sprintf(buffer, "Device.DevInfo.param%lu", i + 1);
 
-        ppSpaceType[i]->name_space = CcspCrCloneString(buffer);
+        ppSpaceType[i]->name_space = AnscCloneString(buffer);
         ppSpaceType[i]->dataType   = rand() % 9;
      }
 
