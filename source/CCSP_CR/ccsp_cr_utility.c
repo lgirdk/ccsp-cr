@@ -265,21 +265,21 @@ CcspCrCleanAll
 
     if( pMyObject->pDeviceName != NULL)
     {
-        CcspCrFreeMemory(pMyObject->pDeviceName);
+        AnscFreeMemory(pMyObject->pDeviceName);
 
         pMyObject->pDeviceName = NULL;
     }
 
     if( pMyObject->pCRName != NULL)
     {
-        CcspCrFreeMemory(pMyObject->pCRName);
+        AnscFreeMemory(pMyObject->pCRName);
 
         pMyObject->pCRName = NULL;
     }
 
     if( pMyObject->pPrefix != NULL)
     {
-        CcspCrFreeMemory(pMyObject->pPrefix);
+        AnscFreeMemory(pMyObject->pPrefix);
 
         pMyObject->pPrefix = NULL;
     }
@@ -294,8 +294,8 @@ CcspCrCleanAll
             pCompInfo       = ACCESS_CCSP_COMPONENT_INFO(pSLinkEntry);
             pSLinkEntry     = AnscQueuePopEntry(&pMyObject->CompInfoQueue);
 
-            CcspCrFreeMemory(pCompInfo->pComponentName);
-            CcspCrFreeMemory(pCompInfo);
+            AnscFreeMemory(pCompInfo->pComponentName);
+            AnscFreeMemory(pCompInfo);
         }
     }
 
@@ -308,8 +308,8 @@ CcspCrCleanAll
             pCompInfo       = ACCESS_CCSP_COMPONENT_INFO(pSLinkEntry);
             pSLinkEntry     = AnscQueuePopEntry(&pMyObject->UnknowCompInfoQueue);
 
-            CcspCrFreeMemory(pCompInfo->pComponentName);
-            CcspCrFreeMemory(pCompInfo);
+            AnscFreeMemory(pCompInfo->pComponentName);
+            AnscFreeMemory(pCompInfo);
         }
     }
 
@@ -322,9 +322,9 @@ CcspCrCleanAll
             pCRInfo         = ACCESS_CCSP_REMOTE_CRINFO(pSLinkEntry);
             pSLinkEntry     = AnscQueuePopEntry(&pMyObject->RemoteCRQueue);
 
-            CcspCrFreeMemory(pCRInfo->pPrefix);
-            CcspCrFreeMemory(pCRInfo->pID);
-            CcspCrFreeMemory(pCRInfo);
+            AnscFreeMemory(pCRInfo->pPrefix);
+            AnscFreeMemory(pCRInfo->pID);
+            AnscFreeMemory(pCRInfo);
         }
     }
 
