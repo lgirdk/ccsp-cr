@@ -380,8 +380,8 @@ CcspCrUnregisterComponent
 
     #if 0
             AnscQueuePopEntryByLink(&pMyObject->CompInfoQueue, &pCompInfo->Linkage);
-            CcspCrFreeMemory(pCompInfo->pComponentName);
-            CcspCrFreeMemory(pCompInfo);
+            AnscFreeMemory(pCompInfo->pComponentName);
+            AnscFreeMemory(pCompInfo);
     #endif
         }
     }

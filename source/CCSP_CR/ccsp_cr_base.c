@@ -48,9 +48,6 @@
 
         *   CcspCreateCR
         *   CcspFreeCR
-        *   CcspCrAllocateMemory
-        *   CcspCrFreeMemory
-        *   CcspCrCloneString
 
     ---------------------------------------------------------------
 
@@ -113,7 +110,7 @@ CcspCreateCR
     PCCSP_NAMESPACE_MGR_OBJECT          pNameMgr    = (PCCSP_NAMESPACE_MGR_OBJECT)NULL;
     
     pThisObject = (PCCSP_CR_MANAGER_OBJECT)
-        CcspCrAllocateMemory(sizeof(CCSP_CR_MANAGER_OBJECT));
+        AnscAllocateMemory(sizeof(CCSP_CR_MANAGER_OBJECT));
 
     if( pThisObject == NULL)
     {
@@ -123,8 +120,8 @@ CcspCreateCR
     /*
      * Initialize the common variables and functions.
      */
-    pThisObject->pDeviceName                        = CcspCrCloneString(CCSP_CR_NAME);
-    pThisObject->pCRName                            = CcspCrCloneString(CCSP_CR_NAME);
+    pThisObject->pDeviceName                        = AnscCloneString(CCSP_CR_NAME);
+    pThisObject->pCRName                            = AnscCloneString(CCSP_CR_NAME);
     pThisObject->pPrefix                            = NULL;
     pThisObject->uVersion                           = 1;
     pThisObject->bSystemReady                       = FALSE;
@@ -210,122 +207,7 @@ CcspFreeCR
     {
         pThisObject->CleanAll(pThisObject);
 
-        CcspCrFreeMemory((PVOID)hCcspCr);
+        AnscFreeMemory((PVOID)hCcspCr);
     }
 }
 
-
-/**********************************************************************
-
-    prototype:
-
-        PVOID
-        CcspCrAllocateMemory
-            (
-                ULONG               uSize
-            );
-
-    description:
-
-        This function is called to allocate specified memory in CR component;
-
-    argument:   ULONG               uSize
-                The size of requested memory
-
-    return:     The memory handle allocated;
-
-**********************************************************************/
-PVOID
-CcspCrAllocateMemory
-  (
-        ULONG                       uSize
-  )
-{
-    /* To monitor the memory usage, we need to add "Component Name" in memory calls */
-
-    return  AnscAllocateMemory(uSize);
-}
-
-
-/**********************************************************************
-
-    prototype:
-
-        void
-        CcspCrFreeMemory
-            (
-                PVOID               pMemory
-            );
-
-    description:
-
-        This function is called to release the memory in CR component;
-
-    argument:   PVOID               pMemory
-                The memory block to be released.
-
-    return:     None
-
-**********************************************************************/
-void
-CcspCrFreeMemory
-  (
-        PVOID                       pMemory
-  )
-{
-    /* To monitor the memory usage, we need to add "Component Name" in memory calls */
-
-    AnscFreeMemory(pMemory);
-}
-
-
-/**********************************************************************
-
-    prototype:
-
-        char*
-        CcspCrCloneString
-            (
-                const char*                 pString
-            );
-
-    description:
-
-        This function is called to clone a string;
-
-    argument:   const char*                 pString
-                The source string;
-
-    return:     The cloned string
-
-**********************************************************************/
-char*
-CcspCrCloneString
-  (
-        const char*                 pString
-  )
-{
-    char*                       pNewString  = NULL;
-    ULONG                       ulSize      = 0;
-
-    if( pString == NULL)
-    {
-        return NULL;
-    }
-
-    ulSize = AnscSizeOfString(pString) + 1;  /*RDKB-6903, CID-33341,null check and use*/
-
-    if( ulSize == 16 || ulSize == 13)
-    {
-        AnscTrace("CcspCrCloneString with ulSize == %lu, '%s'\n", ulSize, pString);
-    }
-
-    pNewString = (char*)CcspCrAllocateMemory(ulSize);
-
-    if( pNewString != NULL)
-    {
-        AnscCopyString(pNewString, (char*)pString);
-    }
-
-    return pNewString;
-}

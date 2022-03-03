@@ -301,11 +301,11 @@ CcspCrLoadDeviceProfile
 
 
     /* create a Component Info for CR itself */
-    pCompInfo = (PCCSP_COMPONENT_INFO)CcspCrAllocateMemory(sizeof(CCSP_COMPONENT_INFO));
+    pCompInfo = (PCCSP_COMPONENT_INFO)AnscAllocateMemory(sizeof(CCSP_COMPONENT_INFO));
 
     if( pCompInfo != NULL)
     {
-        pCompInfo->pComponentName = CcspCrCloneString(CCSP_CR_NAME);
+        pCompInfo->pComponentName = AnscCloneString(CCSP_CR_NAME);
         pCompInfo->uVersion       = CCSP_CR_VERSION;
         pCompInfo->uStatus        = CCSP_Component_NotRegistered;
 
@@ -378,11 +378,11 @@ CcspCrLoadComponentProfile
     }
 
     /* create a Component Info and add it */
-    pCompInfo = (PCCSP_COMPONENT_INFO)CcspCrAllocateMemory(sizeof(CCSP_COMPONENT_INFO));
+    pCompInfo = (PCCSP_COMPONENT_INFO)AnscAllocateMemory(sizeof(CCSP_COMPONENT_INFO));
 
     if( pCompInfo != NULL)
     {
-        pCompInfo->pComponentName = CcspCrCloneString(buffer);
+        pCompInfo->pComponentName = AnscCloneString(buffer);
         pCompInfo->uVersion       = uVersion;
         pCompInfo->uStatus        = CCSP_Component_NotRegistered;
 
@@ -455,12 +455,12 @@ CcspCrLoadRemoteCRInfo
     }
 
     /* create a remote CR info */
-    pCRInfo = (PCCSP_REMOTE_CRINFO)CcspCrAllocateMemory(sizeof(CCSP_REMOTE_CRINFO));
+    pCRInfo = (PCCSP_REMOTE_CRINFO)AnscAllocateMemory(sizeof(CCSP_REMOTE_CRINFO));
 
     if( pCRInfo != NULL)
     {
-        pCRInfo->pPrefix        = CcspCrCloneString(buffer1);
-        pCRInfo->pID            = CcspCrCloneString(buffer2);
+        pCRInfo->pPrefix        = AnscCloneString(buffer1);
+        pCRInfo->pID            = AnscCloneString(buffer2);
 
         AnscQueuePushEntry(&pMyObject->RemoteCRQueue, &pCRInfo->Linkage);
     }
