@@ -136,7 +136,7 @@ CcspCrLookforRemoteCR
         pCompInfo       = ACCESS_CCSP_REMOTE_CRINFO(pSLinkEntry);
         pSLinkEntry     = AnscQueueGetNextEntry(pSLinkEntry);
 
-        if ( AnscEqualString(pCompInfo->pPrefix, (char*)pPrefix, TRUE))
+        if (strcmp(pCompInfo->pPrefix, pPrefix) == 0)
         {
             return  pCompInfo->pID;
         }
@@ -183,7 +183,7 @@ static BOOL ccspStringEndswith
         return FALSE;
     }
   
-    if( AnscEqualString(pLooking, pStrEnds, TRUE))
+    if (strcmp(pLooking, pStrEnds) == 0)
     {
         return TRUE;
     }
@@ -211,7 +211,7 @@ CcspCrLookforComponent
 
         /* Since component in the device profile doesn't have prefix included while registerCapabilities does,
          * we don't need a perfect match here */
-        /* if ( pCompName != NULL && AnscEqualString(pCompInfo->pComponentName, (char*)pCompName, TRUE)) */
+        /* if ( pCompName != NULL && (strcmp(pCompInfo->pComponentName, (char*)pCompName) == 0)) */
         if ( pCompName != NULL && ccspStringEndswith((char*)pCompName, pCompInfo->pComponentName))
         {
             return  (ANSC_HANDLE)pCompInfo;
