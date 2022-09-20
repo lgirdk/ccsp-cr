@@ -69,11 +69,19 @@ typedef struct _crData
     pthread_cond_t readyCond;
 }* crData_t;
 
+typedef struct _ComponentDependency
+{
+    char* eventname;
+    rtVector compRegistry;
+    pthread_t monitorTID;
+} ComponentDependency_t;
+
 typedef struct _ComponentRegistration
 {
     char* name;
     int version;
     int ready;
+    ComponentDependency_t *m_depData;
 } ComponentRegistration_t;
 
 crData_t g_crData = NULL;
@@ -81,12 +89,44 @@ rbusHandle_t g_hRbus = NULL;
 pthread_t g_waitThread;
 int g_waitThreadStarted = 0;
 
-#define CR_DATA_ELEMENTS_COUNT 2
+#define CR_DATA_ELEMENTS_COUNT 3
 #define CR_DATA_ELEMENTS \
 rbusDataElement_t crDataElements[CR_DATA_ELEMENTS_COUNT] = { \
     {"Device.CR.RegisterComponent()", RBUS_ELEMENT_TYPE_METHOD, {NULL, NULL, NULL, NULL, NULL, methodHandler}}, \
+    {"Device.CR.IsComponentRegistered()", RBUS_ELEMENT_TYPE_METHOD, {NULL, NULL, NULL, NULL, NULL, isRegisteredHandler}}, \
     {"Device.CR.SystemReady", RBUS_ELEMENT_TYPE_PROPERTY, {getHandler, NULL, NULL, NULL, subHandler, NULL}} \
 };
+
+static int compData_Create(ComponentDependency_t** comps)
+{
+    int rc = 0;
+    *comps = calloc(1, sizeof(ComponentDependency_t));
+    ERROR_CHECK(rtVector_Create(&(*comps)->compRegistry));
+    return rc;
+}
+
+static void componentDependencyDestroyer(void* item)
+{
+    char* dep_comp = (char*)item;
+    if(dep_comp)
+        free(dep_comp);
+}
+
+static int compData_Destroy(ComponentDependency_t *comps)
+{
+    int rc = 0;
+    if(comps)
+    {
+        if(comps->eventname)
+            free(comps->eventname);
+        if(comps->compRegistry)
+            ERROR_CHECK(rtVector_Destroy(comps->compRegistry, componentDependencyDestroyer));
+        if(comps->monitorTID)
+            pthread_cancel(comps->monitorTID);
+        free(comps);
+    }
+    return rc;
+}
 
 static void componentRegistrationDestroyer(void* item)
 {
@@ -109,7 +149,7 @@ static int crData_Create(crData_t* cr)
     pthread_mutexattr_t mattrib;
     pthread_condattr_t cattrib;
 
-    *cr = malloc(sizeof(struct _crData));
+    *cr = calloc(1, sizeof(struct _crData));
 
     (*cr)->isSystemReady = 0;
 
@@ -128,6 +168,58 @@ static int crData_Create(crData_t* cr)
     return rc;
 }
 
+bool isCompNameRegistered(const char* componentName)
+{
+    ComponentRegistration_t* reg = rtVector_Find(g_crData->registry, componentName, componentRegistrationCompare);
+    if(reg->ready)
+    {
+        CRLOG_WARN("Component Name: %s found in registry", componentName);
+        return true;
+    }
+    else
+        return false;
+
+}
+
+static rbusError_t isRegisteredHandler(rbusHandle_t handle, char const* methodName, rbusObject_t inParams, rbusObject_t outParams, rbusMethodAsyncHandle_t asyncHandle)
+{
+    (void)handle;
+    (void)asyncHandle;
+    rbusValue_t value;
+    CRLOG_WARN("isRegisteredHandler %s", methodName);
+    if(strcmp(methodName, "Device.CR.IsComponentRegistered()") == 0)
+    {
+        rbusValue_t name = rbusObject_GetValue(inParams, "component_name");
+        const char* pName = rbusValue_GetString(name, NULL);
+
+        if(name && pName)
+        {
+            if(isCompNameRegistered(pName))
+            {
+                rbusValue_Init(&value);
+                rbusValue_SetString(value, "TRUE");
+                rbusObject_SetValue(outParams, "value", value);
+                rbusValue_Release(value);
+            }
+            else
+            {
+                rbusValue_Init(&value);
+                rbusValue_SetString(value, "FALSE");
+                rbusObject_SetValue(outParams, "value", value);
+                rbusValue_Release(value);
+            }
+
+            return RBUS_ERROR_SUCCESS;
+        }
+        else
+        {
+            CRLOG_WARN("isRegisteredHandler %s missing name", methodName);
+            return RBUS_ERROR_INVALID_INPUT;
+        }
+    }
+    return RBUS_ERROR_ELEMENT_DOES_NOT_EXIST;
+}
+
 static int crData_Destroy(crData_t cr)
 {
     int rc = 0;
@@ -138,12 +230,60 @@ static int crData_Destroy(crData_t cr)
     return rc;
 }
 
+static void publishReadyEvent(rbusHandle_t g_hRbus, const char* eventName)
+{
+    rbusError_t rc;
+
+    rbusValue_t newVal, oldVal;
+    rbusEvent_t event = {0};
+    rbusObject_t data;
+
+    rbusValue_Init(&newVal);
+    rbusValue_Init(&oldVal);
+    rbusValue_SetBoolean(newVal, true);
+    rbusValue_SetBoolean(oldVal, false);
+
+    rbusObject_Init(&data, NULL);
+    rbusObject_SetValue(data, "value", newVal);
+    rbusObject_SetValue(data, "oldValue", oldVal);
+
+
+    event.name = eventName;
+    event.data = data;
+    event.type = RBUS_EVENT_VALUE_CHANGED;
+
+    CRLOG_WARN("Publishing ready event %s", eventName);
+
+    rc = rbusEvent_Publish(g_hRbus, &event);
+
+    rbusValue_Release(newVal);
+    rbusValue_Release(oldVal);
+    rbusObject_Release(data);
+
+    if(rc != RBUS_ERROR_SUCCESS)
+    {
+        CRLOG_WARN("rbusEvent_Publish %s failed with result=%d", eventName, rc);
+    }
+}
+
+static rbusError_t subHandler(rbusHandle_t handle, rbusEventSubAction_t action, const char* eventName, rbusFilter_t filter, int32_t interval, bool* autoPublish)
+{
+    (void)handle;
+    (void)action;
+    (void)filter;
+    (void)interval;
+    printf("subHandler %s called", eventName);
+    /*disable expensive autopublish because we can easily publish SystemReady value change on our own*/
+    *autoPublish = false;
+    return RBUS_ERROR_SUCCESS;
+}
+
 static int crData_LoadRegistry(crData_t cr)
 {
     int rc = 0;
     xmlDocPtr doc = NULL;
-    xmlNodePtr root, comps, comp, field;
-    xmlChar* name,* version;
+    xmlNodePtr root, comps, comp, depend, field;
+    xmlChar* name,* version,* Event,* dep;
     const char* fileName = NULL;
 
     if(access(CCSP_ETHWAN_ENABLE, F_OK) == 0)
@@ -168,12 +308,18 @@ static int crData_LoadRegistry(crData_t cr)
                     {
                         if(comp->type == XML_ELEMENT_NODE && xmlStrcmp(comp->name, (const xmlChar*)"component") == 0)
                         {
+                            bool haveDependency = false;
+                            name = NULL;
+                            version = NULL;
+                            dep = NULL;
+                            Event = NULL;
+                            ComponentDependency_t *pCompDep = NULL;
+                            compData_Create(&pCompDep);
                             for(field = comp->children; field != NULL; field = field->next)
                             {
+                                char* dep_name = NULL;
                                 if(field->type == XML_ELEMENT_NODE)
                                 {
-                                    name = NULL;
-                                    version = NULL;
                                     if(xmlStrcmp(field->name, (const xmlChar*)"name") == 0)
                                     {
                                         name = xmlNodeGetContent(field);
@@ -182,26 +328,62 @@ static int crData_LoadRegistry(crData_t cr)
                                     {
                                         version = xmlNodeGetContent(field);
                                     }
-
-                                    if(name)
+                                    else if(xmlStrcmp(field->name, (const xmlChar*)"dependencies") == 0)
                                     {
-                                        ComponentRegistration_t* reg = malloc(sizeof(struct _ComponentRegistration));
-                                        reg->ready = 0;
-                                        reg->name = strdup((const char*)name);
-                                        if(version)
-                                            reg->version = atoi((const char*)version);
-                                        else
-                                            reg->version = 1;
-                                        rtVector_PushBack(cr->registry, reg);
-                                        rc = 0;
-                                        CRLOG_WARN("adding component %s %d to registry", reg->name, reg->version);
+                                        haveDependency = true;
+                                        for( depend = field->children; depend != NULL; depend = depend->next)
+                                        {
+                                            if(depend->type == XML_ELEMENT_NODE && xmlStrcmp(depend->name, (const xmlChar*)"dependency") == 0)
+                                            {
+                                                dep = xmlNodeGetContent(depend);
+                                                dep_name = strdup((const char*)dep);
+                                                rtVector_PushBack(pCompDep->compRegistry, dep_name);
+
+                                                CRLOG_WARN("adding component %s to dependency component registry", dep_name);
+                                            }
+                                        }
                                     }
-                                    if(name)
-                                        xmlFree(name);
-                                    if(version)
-                                        xmlFree(version);
+                                    else if(xmlStrcmp(field->name, (const xmlChar*)"event") == 0)
+                                    {
+                                        haveDependency = true;
+                                        Event = xmlNodeGetContent(field);
+                                        pCompDep->eventname = strdup((const char*)Event);
+                                        rbusDataElement_t DataElements[1] = { \
+                                            {(char*)Event, RBUS_ELEMENT_TYPE_EVENT, {NULL, NULL, NULL, NULL, subHandler, NULL}} \
+                                        };
+                                        rbus_regDataElements(g_hRbus, 1, DataElements);
+                                    }
                                 }
                             }
+                            if(name)
+                            {
+                                ComponentRegistration_t* reg = calloc(1, sizeof(struct _ComponentRegistration));
+                                reg->ready = 0;
+                                reg->name = strdup((const char*)name);
+                                if(version)
+                                    reg->version = atoi((const char*)version);
+                                else
+                                    reg->version = 1;
+
+                                if (haveDependency)
+                                    reg->m_depData = pCompDep;
+
+                                rtVector_PushBack(cr->registry, reg);
+                                rc = 0;
+                                CRLOG_WARN("adding component %s %d to registry", reg->name, reg->version);
+                            }
+
+                            if(name)
+                                xmlFree(name);
+                            if(version)
+                                xmlFree(version);
+                            if(dep)
+                                xmlFree(dep);
+                            if(Event)
+                                xmlFree(Event);
+
+                            if (!haveDependency)
+                                compData_Destroy(pCompDep);
                         }
                     }
                 }
@@ -214,7 +396,7 @@ static int crData_LoadRegistry(crData_t cr)
         else
         {
             CRLOG_ERROR("unexpected content in xml %s", fileName);
-	    }
+        }
         xmlFreeDoc(doc);
         doc = NULL;
     }
@@ -252,6 +434,45 @@ static int crData_ReadyCheck(crData_t cr)
     return rc;
 }
 
+
+
+static void* pollingComponentReady(void* user)
+{
+    int rc = 0;
+    int i = 0, size = 0;
+    bool itsReady = true;
+    ComponentDependency_t* pComp = (ComponentDependency_t*)user;
+    CRLOG_WARN("Dependency Component wait thread enter");
+    for(;;)
+    {
+        itsReady = true;
+        size = (int) rtVector_Size(pComp->compRegistry);
+        for(i = 0; i < size; i++)
+        {
+            char* dep_name = rtVector_At(pComp->compRegistry, i);
+            itsReady &= isCompNameRegistered(dep_name);
+
+            if(!itsReady)
+                break;
+        }
+
+        if(itsReady)
+        {
+            CRLOG_WARN("All Dependency Componets are ready");
+            publishReadyEvent(g_hRbus, pComp->eventname);
+            break;
+        }
+
+
+        sleep(1);
+    }
+    CRLOG_WARN("Dependency component wait thread exit");
+    pComp->monitorTID = 0;
+    (void)rc;
+    return NULL;
+}
+
+
 static int crData_RegisterComponent(crData_t cr, const char* componentName, int version)
 {
     int rc = 0;
@@ -266,6 +487,18 @@ static int crData_RegisterComponent(crData_t cr, const char* componentName, int 
     reg->ready = 1;
     ERROR_CHECK(pthread_mutex_unlock(&cr->readyMutex));
 
+    if (reg->m_depData)
+    {
+        if(!(reg->m_depData->monitorTID))
+        {
+            ERROR_CHECK(pthread_create(&(reg->m_depData->monitorTID), NULL, &pollingComponentReady, reg->m_depData));
+            ERROR_CHECK(pthread_detach(reg->m_depData->monitorTID));
+        }
+    }
+    else
+    {
+        CRLOG_WARN("No Dependency Component for %s", componentName);
+    }
     CRLOG_WARN("RegisterComponent: %s is ready", componentName);
     
     if(crData_ReadyCheck(cr) == 0)
@@ -392,57 +625,6 @@ static rbusError_t getHandler(rbusHandle_t handle, rbusProperty_t property, rbus
     return RBUS_ERROR_ELEMENT_DOES_NOT_EXIST;
 }
 
-static rbusError_t subHandler(rbusHandle_t handle, rbusEventSubAction_t action, const char* eventName, rbusFilter_t filter, int32_t interval, bool* autoPublish)
-{
-    (void)handle;
-    (void)action;
-    (void)filter;
-    (void)interval;
-
-    printf("subHandler %s called", eventName);
-
-    /*disable expensive autopublish because we can easily publish SystemReady value change on our own*/
-    *autoPublish = false;
-
-    return RBUS_ERROR_SUCCESS;
-}
-
-static void publishSystemReadyEvent(rbusHandle_t g_hRbus, const char* eventName)
-{
-    rbusError_t rc;
-
-    rbusValue_t newVal, oldVal;
-    rbusEvent_t event = {0};
-    rbusObject_t data;
-
-    rbusValue_Init(&newVal);
-    rbusValue_Init(&oldVal);
-    rbusValue_SetBoolean(newVal, true);
-    rbusValue_SetBoolean(oldVal, false);
-
-    rbusObject_Init(&data, NULL);
-    rbusObject_SetValue(data, "value", newVal);
-    rbusObject_SetValue(data, "oldValue", oldVal);
-
-
-    event.name = eventName;
-    event.data = data;
-    event.type = RBUS_EVENT_VALUE_CHANGED;
-
-    CRLOG_WARN("Publishing system ready event %s", eventName);
-
-    rc = rbusEvent_Publish(g_hRbus, &event);
-
-    rbusValue_Release(newVal);
-    rbusValue_Release(oldVal);
-    rbusObject_Release(data);
-
-    if(rc != RBUS_ERROR_SUCCESS)
-    {
-        CRLOG_WARN("rbusEvent_Publish %s failed with result=%d", eventName, rc);
-    }
-}
-
 static void* waitForSystemReady(void* user)
 {
     int rc = 0;
@@ -456,7 +638,7 @@ static void* waitForSystemReady(void* user)
             CR_DATA_ELEMENTS;
             ERROR_CHECK(pthread_mutex_unlock(&cr->readyMutex));
             CRLOG_WARN("System Ready");
-            publishSystemReadyEvent(g_hRbus, crDataElements[1].name);
+            publishReadyEvent(g_hRbus, crDataElements[2].name);
             break;
         }
         if(g_waitThreadStarted == 0)/*if user enter 'q' key*/
@@ -526,16 +708,16 @@ int CRRbusOpen()
 
     crData_Create(&g_crData);
 
-    if(crData_LoadRegistry(g_crData) != 0)
-    {
-        CRLOG_ERROR("Failed to read component registry xml");
-        goto exit2;
-    }
-
     rc = rbus_open(&g_hRbus, CR_COMPONENT_ID);
     if(rc != RBUS_ERROR_SUCCESS)
     {
         CRLOG_ERROR("rbus_open failed: %d", rc);
+        goto exit2;
+    }
+
+    if(crData_LoadRegistry(g_crData) != 0)
+    {
+        CRLOG_ERROR("Failed to read component registry xml");
         goto exit2;
     }
 
@@ -626,9 +808,9 @@ int main(int argc, char* argv[])
     (void)(argc);(void)(argv);
     if(CRRbusOpen() == -1)
         return -1;
-	while((ch = getchar()) != 'q')
-	{
-	}
+    while((ch = getchar()) != 'q')
+    {
+    }
     CRRbusClose();
     return 0;
 }

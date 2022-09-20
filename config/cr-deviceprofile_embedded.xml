@@ -50,6 +50,11 @@
 
 	<component>
 		<name>com.cisco.spvtg.ccsp.wifi</name> <version>1</version>
+                <dependencies>
+                        <dependency>com.cisco.spvtg.ccsp.psm</dependency>
+                        <dependency>com.cisco.spvtg.ccsp.pam</dependency>
+                </dependencies>
+                <event>wifi_ready_to_go</event>
 	</component>
 
 	<component>
