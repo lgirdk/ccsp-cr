@@ -59,10 +59,12 @@ bool g_dropStatus = false;
 #endif
 #define DEBUG_INI_NAME  "/etc/debug.ini"
 
+#define SUBSYS_LEN 32
+
 PCCSP_CR_MANAGER_OBJECT                     g_pCcspCrMgr            = NULL;
 void*                                       g_pDbusHandle           = NULL;
 ULONG                                       g_ulAllocatedSizeInit   = 0;
-char                                        g_Subsystem[32]         = {0};
+char                                        g_Subsystem[SUBSYS_LEN] = {0};
 
 extern ULONG                                g_ulAllocatedSizeCurr;
 
@@ -487,7 +489,16 @@ int main(int argc, char* argv[])
     {
         if ( (strcmp(argv[idx], "-subsys") == 0) )
         {
-            AnscCopyString(g_Subsystem, argv[idx+1]);
+	    /* CID-137568 fix */
+	    if(strlen(argv[idx+1]) < SUBSYS_LEN)
+	    {
+		AnscCopyString(g_Subsystem, argv[idx+1]);
+	    }
+	    else
+	    {
+	        AnscTrace("subsys length error \n");
+		return 1;
+	    }
         }
         else if ( strcmp(argv[idx], "-c" ) == 0 )
         {
