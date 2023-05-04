@@ -1404,7 +1404,9 @@ void InitDbus()
     g_pCcspCrMgr->hDbusHandle                         = g_pDbusHandle;
     g_pCcspCrMgr->SignalProc.SignalSystemReadyProc    = CcspBaseIf_SendsystemReadySignal;
     g_pCcspCrMgr->SignalProc.SignalProfileChangeProc  = CcspBaseIf_SenddeviceProfileChangeSignal;
+#if 0 /* Commenting this part as sessionID is taken care of session_mgr of rbus */
     g_pCcspCrMgr->SignalProc.SignalSessionChangeProc  = CcspBaseIf_SendcurrentSessionIDSignal;
+#endif
 
     memset(&cb, 0, sizeof(cb));
     if (CCSP_Msg_IsRbus_enabled())

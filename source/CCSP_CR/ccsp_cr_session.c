@@ -143,6 +143,7 @@ CcspCrRequestSessionID
 
     pThisObject->bInSession = TRUE;
 
+#if 0  /* Commenting this part as sessionID is taken care of session_mgr of rbus */
     /* signal D-Bus about the new session */
     if( pThisObject->SignalProc.SignalSessionChangeProc != NULL)
     {
@@ -153,6 +154,7 @@ CcspCrRequestSessionID
                 pThisObject->uSessionID
             );
     }
+#endif
 
 #ifdef   _DEBUG
     AnscTrace("CcspCrRequestSessionID - priority %lu, session id = %lu.\n", uPriority, pThisObject->uSessionID);
@@ -272,6 +274,7 @@ CcspCrInformEndOfSession
         {
             pThisObject->bInSession = FALSE;
 
+#if 0  /* Commenting this part as sessionID is taken care of session_mgr of rbus */
             /* signal D-Bus about the new session */
             if( pThisObject->SignalProc.SignalSessionChangeProc != NULL)
             {
@@ -282,6 +285,7 @@ CcspCrInformEndOfSession
                         0
                     );
             }
+#endif
         }
     }
 
