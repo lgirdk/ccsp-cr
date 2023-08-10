@@ -171,7 +171,7 @@ static int crData_Create(crData_t* cr)
 bool isCompNameRegistered(const char* componentName)
 {
     ComponentRegistration_t* reg = rtVector_Find(g_crData->registry, componentName, componentRegistrationCompare);
-    if(reg->ready)
+    if(reg && reg->ready)
     {
         CRLOG_WARN("Component Name: %s found in registry", componentName);
         return true;
