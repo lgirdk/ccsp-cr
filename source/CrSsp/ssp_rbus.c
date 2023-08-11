@@ -80,6 +80,7 @@ typedef struct _ComponentRegistration
 {
     char* name;
     int version;
+    int registered;
     int ready;
     ComponentDependency_t *m_depData;
 } ComponentRegistration_t;
@@ -171,7 +172,7 @@ static int crData_Create(crData_t* cr)
 bool isCompNameRegistered(const char* componentName)
 {
     ComponentRegistration_t* reg = rtVector_Find(g_crData->registry, componentName, componentRegistrationCompare);
-    if(reg && reg->ready)
+    if(reg && reg->registered)
     {
         CRLOG_WARN("Component Name: %s found in registry", componentName);
         return true;
@@ -278,6 +279,43 @@ static rbusError_t subHandler(rbusHandle_t handle, rbusEventSubAction_t action, 
     return RBUS_ERROR_SUCCESS;
 }
 
+static rbusError_t eventGetHandler(rbusHandle_t handle, rbusProperty_t property, rbusGetHandlerOptions_t* opts)
+{
+    (void)handle;
+    (void)opts;
+    char const* eventName = NULL;
+    bool eventReady = false;
+    int i = 0, size = 0;
+    rbusValue_t value = NULL;
+
+    eventName = rbusProperty_GetName(property);
+    if (!eventName)
+        return RBUS_ERROR_INVALID_INPUT;
+    size = (int) rtVector_Size(g_crData->registry);
+    for(i = 0; i < size; i++)
+    {
+        ComponentRegistration_t* tempRegistry = (ComponentRegistration_t*)rtVector_At(g_crData->registry, i);
+        if(tempRegistry && tempRegistry->m_depData)
+        {
+            char* compEventName = tempRegistry->m_depData->eventname;
+            if(compEventName)
+            {
+                if(!strncmp(compEventName, eventName, strlen(eventName)))
+                {
+                    eventReady = tempRegistry->ready;
+                    break;
+                }
+            }
+        }
+    }
+    rbusValue_Init(&value);
+    rbusValue_SetBoolean(value, eventReady);
+    rbusProperty_SetValue(property, value);
+    rbusValue_Release(value);
+
+    return RBUS_ERROR_SUCCESS;
+}
+
 static int crData_LoadRegistry(crData_t cr)
 {
     int rc = 0;
@@ -349,7 +387,7 @@ static int crData_LoadRegistry(crData_t cr)
                                         Event = xmlNodeGetContent(field);
                                         pCompDep->eventname = strdup((const char*)Event);
                                         rbusDataElement_t DataElements[1] = { \
-                                            {(char*)Event, RBUS_ELEMENT_TYPE_EVENT, {NULL, NULL, NULL, NULL, subHandler, NULL}} \
+                                            {(char*)Event, RBUS_ELEMENT_TYPE_EVENT, {eventGetHandler, NULL, NULL, NULL, subHandler, NULL}} \
                                         };
                                         rbus_regDataElements(g_hRbus, 1, DataElements);
                                     }
@@ -358,6 +396,7 @@ static int crData_LoadRegistry(crData_t cr)
                             if(name)
                             {
                                 ComponentRegistration_t* reg = calloc(1, sizeof(struct _ComponentRegistration));
+                                reg->registered = 0;
                                 reg->ready = 0;
                                 reg->name = strdup((const char*)name);
                                 if(version)
@@ -418,7 +457,7 @@ static int crData_ReadyCheck(crData_t cr)
 
     for(i = 0; i < (int)rtVector_Size(cr->registry); ++i)
     {
-        if(!((ComponentRegistration_t*)rtVector_At(cr->registry, i))->ready)
+        if(!((ComponentRegistration_t*)rtVector_At(cr->registry, i))->registered)
         {
             CRLOG_WARN("ReadyCheck waiting on %s", ((ComponentRegistration_t*)rtVector_At(cr->registry, i))->name);
             rc = -1;
@@ -441,8 +480,23 @@ static void* pollingComponentReady(void* user)
     int rc = 0;
     int i = 0, size = 0;
     bool itsReady = true;
-    ComponentDependency_t* pComp = (ComponentDependency_t*)user;
+    ComponentRegistration_t* reg = (ComponentRegistration_t*)user;
+    ComponentDependency_t* pComp = NULL;
     CRLOG_WARN("Dependency Component wait thread enter");
+  
+    if ((NULL == reg))
+    {
+        return NULL;
+    }
+    else
+    {
+        pComp = reg->m_depData;
+        if(NULL == pComp)
+        {
+            return NULL;
+        }
+    }
+      
     for(;;)
     {
         itsReady = true;
@@ -459,13 +513,16 @@ static void* pollingComponentReady(void* user)
         if(itsReady)
         {
             CRLOG_WARN("All Dependency Componets are ready");
+            ERROR_CHECK(pthread_mutex_lock(&g_crData->readyMutex));
+            reg->ready = 1;
+            ERROR_CHECK(pthread_mutex_unlock(&g_crData->readyMutex));
             publishReadyEvent(g_hRbus, pComp->eventname);
             break;
         }
 
-
         sleep(1);
     }
+  
     CRLOG_WARN("Dependency component wait thread exit");
     pComp->monitorTID = 0;
     (void)rc;
@@ -477,31 +534,41 @@ static int crData_RegisterComponent(crData_t cr, const char* componentName, int 
 {
     int rc = 0;
     (void)version;
+    int isSystemReady = 0;
     ComponentRegistration_t* reg = rtVector_Find(cr->registry, componentName, componentRegistrationCompare);
     if(!reg)
     {
         CRLOG_WARN("RegisterComponent: %s not found in registry", componentName);
         return -1;
     }
-    ERROR_CHECK(pthread_mutex_lock(&cr->readyMutex));
-    reg->ready = 1;
-    ERROR_CHECK(pthread_mutex_unlock(&cr->readyMutex));
-
+  
     if (reg->m_depData)
     {
+        ERROR_CHECK(pthread_mutex_lock(&cr->readyMutex));
+        reg->registered = 1;
+        isSystemReady = crData_ReadyCheck(cr);
+        ERROR_CHECK(pthread_mutex_unlock(&cr->readyMutex));
+      
         if(!(reg->m_depData->monitorTID))
         {
-            ERROR_CHECK(pthread_create(&(reg->m_depData->monitorTID), NULL, &pollingComponentReady, reg->m_depData));
+            ERROR_CHECK(pthread_create(&(reg->m_depData->monitorTID), NULL, &pollingComponentReady, reg));
             ERROR_CHECK(pthread_detach(reg->m_depData->monitorTID));
         }
     }
     else
     {
         CRLOG_WARN("No Dependency Component for %s", componentName);
+
+        ERROR_CHECK(pthread_mutex_lock(&cr->readyMutex));
+        reg->ready = 1;
+        reg->registered = 1;
+        isSystemReady = crData_ReadyCheck(cr);
+        ERROR_CHECK(pthread_mutex_unlock(&cr->readyMutex));
     }
-    CRLOG_WARN("RegisterComponent: %s is ready", componentName);
-    
-    if(crData_ReadyCheck(cr) == 0)
+
+    CRLOG_WARN("RegisterComponent: %s is Registered", componentName);
+
+    if(isSystemReady == 0)
     {
         ERROR_CHECK(pthread_cond_signal(&cr->readyCond));
         return rc;
@@ -647,6 +714,8 @@ static void* waitForSystemReady(void* user)
             break;
         }
         ERROR_CHECK(pthread_cond_wait(&cr->readyCond, &cr->readyMutex));
+        CRLOG_WARN("Received Signal to Post SystemReady");
+      
     }
     CRLOG_WARN("wait thread exit");
     (void)rc;
