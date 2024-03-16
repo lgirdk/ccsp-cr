@@ -46,10 +46,6 @@
       <event>wifi_ready_to_go</event>
     </component>
     <component>
-      <name>com.cisco.spvtg.ccsp.lmlite</name>
-      <version>1</version>
-    </component>
-    <component>
       <name>com.cisco.spvtg.ccsp.ledmanager</name>
       <version>1</version>
     </component>
