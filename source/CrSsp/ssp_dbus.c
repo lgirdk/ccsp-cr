@@ -1409,21 +1409,9 @@ void InitDbus()
 #endif
 
     memset(&cb, 0, sizeof(cb));
-    if (CCSP_Msg_IsRbus_enabled())
-    {
-        cb.registerCaps  = CcspCrProcessRegisterCap;
-        cb.isSystemReady = ccspCrSystemReady;
-    }
-    else
-    {
-        /* CID 75132 - Unchecked return value */
-        returnStatus = CCSP_Message_Bus_Register_Path(g_pDbusHandle,CCSP_DBUS_PATH_CR, CcspCrProcessDbusRequest, g_pDbusHandle);
-	if ( returnStatus != CCSP_Message_Bus_OK )
-        {
-            CcspTraceInfo((" !!! CCSP_Message_Bus_Register_Path ERROR returnStatus: %lu\n!!!\n", returnStatus));
-	}
-    }
 
+    cb.registerCaps  = CcspCrProcessRegisterCap;
+    cb.isSystemReady = ccspCrSystemReady;
 
     cb.getParameterValues     = CcspCcMbi_GetParameterValues;
     cb.setParameterValues     = CcspCcMbi_SetParameterValues;
@@ -1446,15 +1434,6 @@ void InitDbus()
         g_pDbusHandle,
         &cb
     );
-
-
-    /* Listen to certain events */
-    if (!(CCSP_Msg_IsRbus_enabled())) /* NameOwnerChanged is only required for Dbus and not for rbus*/
-    {
-        returnStatus = CcspBaseIf_Register_Event(g_pDbusHandle, 0, "NameOwnerChanged");
-	if( returnStatus != CCSP_Message_Bus_OK )
-             CcspTraceError((" !!! CcspBaseIf_Register_Event: NameOwnerChanged ERROR returnStatus: %lu!!!\n", returnStatus));
-    }
 
     if(g_iTraceLevel >= CCSP_TRACE_LEVEL_EMERGENCY)
         ulLogLevel = (ULONG) g_iTraceLevel;
